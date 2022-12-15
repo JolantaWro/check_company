@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<form action="#" method="post">
+    {% csrf_token %}
+    {{ form.company_name|as_crispy_field }}
+    <div class="row">
+        <div class="col-6">
+          {{ form.number_NIP|as_crispy_field }}
+        </div>
+        <div class="col-6">
+          {{ form.year_results|as_crispy_field }}
+        </div>
+    </div>
+    <h4>ASSETS / LIABILITIES AND EQUITY </h4>
+    <div class="row">
+        <div class="col-6">
+          {{ form.assets_fixed|as_crispy_field }}
+        </div>
+        <div class="col-6">
+           {{ form.capital_share|as_crispy_field }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+          {{ form.assets_current|as_crispy_field }}
+        </div>
+        <div class="col-6">
+            {{ form.provision_and_accruals|as_crispy_field }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+          {{ form.stock|as_crispy_field }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+        {{ form.receivables_short_term|as_crispy_field }}
+        </div>
+        <div class="col-6">
+          {{ form.liabilities_long_therm|as_crispy_field }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+           {{ form.receivables_trade|as_crispy_field }}
+        </div>
+        <div class="col-6">
+            {{ form.liabilities_long_therm_financial|as_crispy_field }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+         {{ form.receivables_tax|as_crispy_field }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+         {{ form.investments_short_term|as_crispy_field }}
+        </div>
+        <div class="col-6">
+            {{ form.liabilities_short_therm|as_crispy_field }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+          {{ form.assets_cash|as_crispy_field }}
+        </div>
+        <div class="col-6">
+            {{ form.liabilities_short_therm_financial|as_crispy_field }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+
+        </div>
+        <div class="col-6">
+             {{ form.liabilities_short_therm_trade|as_crispy_field }}
+        </div>
+    </div>
+    <h4>PROFIT AND LOSS ACCOUNT </h4>
+    <div class="row">
+    {{ form.revenue|as_crispy_field }}
+    {{ form.profit_operating|as_crispy_field }}
+    {{ form.depreciation|as_crispy_field }}
+    {{ form.profit_gross|as_crispy_field }}
+    {{ form.tax_income|as_crispy_field }}
+    </div>
+    <input type="submit" value="Send"/>
+
+</form>
+
+{% endblock %}

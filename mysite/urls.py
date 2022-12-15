@@ -17,20 +17,20 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from companyapp.views import IndexView, MyAccount
+from companyapp.views import IndexView, MyAccount, NewRatios, NewRatiosFile
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', IndexView.as_view(), name="index"),
-    path('accounta/', MyAccount.as_view(), name="accounts"),
+    path('accounts/', MyAccount.as_view(), name="accounts"),
 
     # path('add_user/', AddUser.as_view(), name="add_user"),
     # path('login_user/', LoginUser.as_view(), name="login_user"),
     # path('logout_user/', LogoutUser.as_view(), name="logout_user"),
     # path('change_password/', ChangePasswordView.as_view(), name="change_pass"),
-    # path('accounts/', MyAccounts.as_view(), name="accounts"),
-    # path('add_results/', NewRatios.as_view(), name="add_results"),
+    path('file_add/', NewRatiosFile.as_view(), name="file_add"),
+    path('results_add/', NewRatios.as_view(), name="results_add"),
     # path('show/<int:result_id>/', ViewRatios.as_view(), name="show"),
     # path('edit_result/<int:result_id>/', EditRatios.as_view(), name="edit_result"),
     # path('delete_result/<int:result_id>/', DeleteRatios.as_view(), name="delete_result"),
@@ -41,7 +41,6 @@ urlpatterns = [
     # # path('company/', CompanyView.as_view(), company_name="company_all"),
     # path('add_trade/', NewTrade.as_view(), name="add_trade"),
     # path('search_trade/', TradeSearchCompany.as_view(), name="search_trade"),
-    # path('add_link/', NewRatiosLink.as_view(), name="add_link"),
     # path('add_task/', AddTask.as_view(), name="add_task"),
     # path('show_task/<int:task_id>/', TaskViewDetail.as_view(), name="show_task"),
     # path('edit_task/<int:task_id>/', EditTask.as_view(), name="edit_task"),
