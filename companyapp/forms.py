@@ -12,7 +12,7 @@ class AddFileForm(forms.Form):
    file_name = forms.FileField()
 
 
-class AddResultsForm(forms.Form):
+class RatiosAddForm(forms.Form):
     company_name = forms.CharField(max_length=255)
     number_NIP = forms.IntegerField()
     year_results = forms.IntegerField()
@@ -65,11 +65,10 @@ class TradeForm(forms.Form):
 
 
 class ResultForm(ModelForm):
-    pass
-#    class Meta:
-#        model = CompanyRatios
-#        fields = ['dl_zobowiazania_finansowe', 'kr_zobowiazania_finansowe']
-#
+   class Meta:
+       model = CompanyRatios
+       fields = ['liabilities_long_therm_financial', 'liabilities_short_therm_financial']
+
 class LoginForm(forms.Form):
    login = forms.CharField(max_length=64)
    password = forms.CharField(widget=forms.PasswordInput)
