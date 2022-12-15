@@ -17,32 +17,33 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from companyapp.views import IndexView, MyAccount, NewRatios, NewRatiosFile
+from companyapp.views import IndexView, MyAccount, RatiosAdd, NewRatiosFile, AddUser, LoginUser \
+    , LogoutUser, ChangePasswordView, CompanyAdd, TradeAdd, CompanyEdit, CompanyDetail, CompanyDelete \
+    , TradeSearchCompany, TaskDetail, TaskEdit, TaskDelete, TaskAdd
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', IndexView.as_view(), name="index"),
     path('accounts/', MyAccount.as_view(), name="accounts"),
-
-    # path('add_user/', AddUser.as_view(), name="add_user"),
-    # path('login_user/', LoginUser.as_view(), name="login_user"),
-    # path('logout_user/', LogoutUser.as_view(), name="logout_user"),
-    # path('change_password/', ChangePasswordView.as_view(), name="change_pass"),
+    path('user_add/', AddUser.as_view(), name="user_add"),
+    path('user_login/', LoginUser.as_view(), name="user_login"),
+    path('user_logout/', LogoutUser.as_view(), name="user_logout"),
+    path('user_change_password/', ChangePasswordView.as_view(), name="user_change_pass"),
     path('file_add/', NewRatiosFile.as_view(), name="file_add"),
-    path('results_add/', NewRatios.as_view(), name="results_add"),
+    path('results_add/', RatiosAdd.as_view(), name="results_add"),
     # path('show/<int:result_id>/', ViewRatios.as_view(), name="show"),
     # path('edit_result/<int:result_id>/', EditRatios.as_view(), name="edit_result"),
     # path('delete_result/<int:result_id>/', DeleteRatios.as_view(), name="delete_result"),
-    # path('show_company/<int:company_id>/', ShowCompany.as_view(), name="show_company"),
-    # path('add_company/', NewCompany.as_view(), name="add_company"),
-    # path('edit_company/<int:company_id>/', EditCompany.as_view(), name="edit_company"),
-    # path('delete_company/<int:company_id>/', DeleteCompany.as_view(), name="delete_company"),
-    # # path('company/', CompanyView.as_view(), company_name="company_all"),
-    # path('add_trade/', NewTrade.as_view(), name="add_trade"),
-    # path('search_trade/', TradeSearchCompany.as_view(), name="search_trade"),
-    # path('add_task/', AddTask.as_view(), name="add_task"),
-    # path('show_task/<int:task_id>/', TaskViewDetail.as_view(), name="show_task"),
-    # path('edit_task/<int:task_id>/', EditTask.as_view(), name="edit_task"),
-    # path('delete_task/<int:task_id>/', DeleteTask.as_view(), name="delete_task"),
+    path('company_detail/<int:company_id>/', CompanyDetail.as_view(), name="company_detail"),
+    path('company_add/', CompanyAdd.as_view(), name="company_add"),
+    path('company_edit/<int:company_id>/', CompanyEdit.as_view(), name="company_edit"),
+    path('company_delete/<int:company_id>/', CompanyDelete.as_view(), name="company_delete"),
+    # path('company/', CompanyView.as_view(), company_name="company_all"),
+    path('trade_add/', TradeAdd.as_view(), name="trade_add"),
+    path('trade_search/', TradeSearchCompany.as_view(), name="trade_search"),
+    path('task_add/', TaskAdd.as_view(), name="task_add"),
+    path('task_detail/<int:task_id>/', TaskDetail.as_view(), name="task_detail"),
+    path('task_edit/<int:task_id>/', TaskEdit.as_view(), name="task_edit"),
+    path('task_delite/<int:task_id>/', TaskDelete.as_view(), name="task_delete"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

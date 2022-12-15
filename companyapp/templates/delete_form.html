@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} {% endblock %}
+{% block content %}
+
+<h3 class="card-title">Do you really want to delete "{{ form }}"</h3>
+   <form method="post">
+       {% csrf_token %}
+       <button type="submit" class="btn btn-danger">Delete</button>
+   </form>
+   <br>
+   <br>
+   <a href="{% url 'accounts' %}">Back</a>
+
+{% endblock %}

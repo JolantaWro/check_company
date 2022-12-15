@@ -52,59 +52,51 @@ def validate_nip(nip_int):
 
 
 class CompanyForm(forms.Form):
-    pass
-#    name = forms.CharField(max_length=255)
-#    numberNip = forms.IntegerField(validators=[validate_nip])
-#    active = forms.BooleanField()
-#    trade = forms.CharField(max_length=255)
-#
-#
-#
+   company_name = forms.CharField(max_length=255)
+   number_NIP = forms.IntegerField(validators=[validate_nip])
+   active = forms.BooleanField()
+   trade = forms.CharField(max_length=255)
+
+
+
 class TradeForm(forms.Form):
-    pass
-#    trade_name = forms.CharField(max_length=64, label='nr PKD')
-#    description = forms.Textarea()
-#
-#
+   trade_name = forms.CharField(max_length=64, label='nr PKD')
+   description = forms.Textarea()
+
+
 class ResultForm(ModelForm):
     pass
 #    class Meta:
 #        model = CompanyRatios
 #        fields = ['dl_zobowiazania_finansowe', 'kr_zobowiazania_finansowe']
 #
-class LoginFormP(forms.Form):
-    pass
-#    login = forms.CharField(max_length=64)
-#    password = forms.CharField(widget=forms.PasswordInput)
-#
+class LoginForm(forms.Form):
+   login = forms.CharField(max_length=64)
+   password = forms.CharField(widget=forms.PasswordInput)
+
 class AddUserForm(forms.Form):
-    pass
-#    login = forms.CharField(max_length=100)
-#    password = forms.CharField(label='Hasło', max_length=100, widget=forms.PasswordInput)
-#    password_repeat = forms.CharField(label='Powtórzone hasło', max_length=100, widget=forms.PasswordInput)
-#    first_name = forms.CharField(label='Imię', max_length=100)
-#    last_name = forms.CharField(label='Nazwisko', max_length=100)
-#    mail = forms.EmailField(max_length=100)
-#
+   login = forms.CharField(max_length=100)
+   password = forms.CharField(label='Password', max_length=100, widget=forms.PasswordInput)
+   password_repeat = forms.CharField(label='Repeat password', max_length=100, widget=forms.PasswordInput)
+   first_name = forms.CharField(label='First name', max_length=100)
+   last_name = forms.CharField(label='Last name', max_length=100)
+   mail = forms.EmailField(max_length=100)
+
 class ChangePasswordForm(forms.Form):
-    pass
-#    password = forms.CharField(label='Hasło', max_length=100, widget=forms.PasswordInput)
-#    repeat_password = forms.CharField(label='Powtórzone hasło', max_length=100, widget=forms.PasswordInput)
-#
+    password = forms.CharField(label='Password', max_length=100, widget=forms.PasswordInput)
+    repeat_password = forms.CharField(label='Repeat password', max_length=100, widget=forms.PasswordInput)
+
 class TaskForm(forms.Form):
-    pass
-#    title = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Add new'}))
-#    deadline = forms.DateField(widget=forms.SelectDateWidget)
-#    company = forms.ModelChoiceField(queryset=Company.objects.all())
-#    description = forms.Textarea()
-#
-#
+    title = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Add new'}))
+    deadline = forms.DateField(widget=forms.SelectDateWidget)
+    company = forms.ModelChoiceField(queryset=Company.objects.all())
+    description = forms.Textarea()
+
+
 class TaskEditForm(forms.Form):
-    pass
-#    title = forms.CharField(widget=forms.TextInput())
-#    deadline = forms.DateField(widget=forms.SelectDateWidget)
-#    description = forms.CharField(widget=forms.Textarea())
-#
+    title = forms.CharField(widget=forms.TextInput())
+    deadline = forms.DateField(widget=forms.SelectDateWidget)
+    description = forms.CharField(widget=forms.Textarea())
+
 class SearchForm(forms.Form):
-    pass
-#    name = forms.CharField(label="Wyszukiwane po PKD", max_length=64, required=True)
+    name = forms.CharField(label="Search from PKD", max_length=64, required=True)

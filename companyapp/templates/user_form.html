@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<form action="#" method="post">
+  {% csrf_token %}
+  {{ form.login|as_crispy_field }}
+  {{ form.password|as_crispy_field }}
+  {{ form.password_repeat|as_crispy_field }}
+  {{ form.first_name|as_crispy_field }}
+  {{ form.last_name|as_crispy_field }}
+  {{ form.mail|as_crispy_field }}
+  <input type="submit" value="Send"/>
+</form>
+
+{% endblock %}

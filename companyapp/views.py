@@ -1,11 +1,10 @@
-
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from .forms import AddResultsForm, CompanyForm, AddFileForm, LoginFormP, AddUserForm, ChangePasswordForm, TradeForm, \
+from .forms import AddResultsForm, CompanyForm, AddFileForm, LoginForm, AddUserForm, ChangePasswordForm, TradeForm, \
    SearchForm, TaskForm, ResultForm, TaskEditForm
 from django.http import HttpResponse
 import xml.etree.ElementTree as ET
@@ -13,273 +12,273 @@ from datetime import date, datetime, timedelta
 from .models import Company, CompanyRatios, Category, Document, Trade, Task
 from django.contrib.auth.models import Group, Permission
 
-# class LoginUser(View):
-#
-#   def get(self, request):
-#       form = LoginFormP()
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request):
-#       form = LoginFormP(request.POST)
-#       if form.is_valid():
-#           username = form.cleaned_data.get('login')
-#           password = form.cleaned_data.get('password')
-#           user = authenticate(username=username, password=password)
-#           if user:
-#               login(request, user)
-#           else:
-#               form.add_error(None, 'Zły login lub hasło')
-#       return redirect('accounts')
-#
-# class LogoutUser(LoginRequiredMixin,View):
-#   def get(self, request):
-#       logout(request)
-#       return redirect('index')
-#
-#
-# class AddUser(View):
-#   def get(self, request):
-#       form = AddUserForm()
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request):
-#       form = AddUserForm(request.POST)
-#       if form.is_valid():
-#           username = form.cleaned_data.get('login')
-#           password = form.cleaned_data.get('password')
-#           repeat_password = form.cleaned_data.get('password_repeat')
-#           first_name = form.cleaned_data.get('first_name')
-#           last_name = form.cleaned_data.get('last_name')
-#           mail = form.cleaned_data.get('mail')
-#           if User.objects.filter(username=username).exists():
-#               raise ValidationError('Ten login jest już zajęty')
-#
-#           if password != repeat_password:
-#               form.add_error(None, 'Błąd dot. hasła')
-#
-#
-#           new_user = User.objects.create_user(username=username, password=password, email=mail)
-#           add_company = Permission.objects.get(codename='add_company')
-#           view_company = Permission.objects.get(codename='view_company')
-#           change_company = Permission.objects.get(codename='change_company')
-#           delete_company = Permission.objects.get(codename='delete_company')
-#           add_document = Permission.objects.get(codename='add_document')
-#           view_document = Permission.objects.get(codename='view_document')
-#           add_category = Permission.objects.get(codename='add_category')
-#           view_category = Permission.objects.get(codename='view_category')
-#           change_category = Permission.objects.get(codename='change_category')
-#           delete_category = Permission.objects.get(codename='delete_category')
-#
-#           add_companyratios = Permission.objects.get(codename='add_companyratios')
-#           view_companyratios = Permission.objects.get(codename='view_companyratios')
-#           change_companyratios = Permission.objects.get(codename='change_companyratios')
-#           delete_companyratios = Permission.objects.get(codename='delete_companyratios')
-#
-#           add_trade = Permission.objects.get(codename='add_trade')
-#           view_trade = Permission.objects.get(codename='view_trade')
-#           change_trade = Permission.objects.get(codename='change_trade')
-#           delete_trade = Permission.objects.get(codename='delete_trade')
-#
-#           add_task = Permission.objects.get(codename='add_task')
-#           view_task = Permission.objects.get(codename='view_task')
-#           change_task = Permission.objects.get(codename='change_task')
-#           delete_task = Permission.objects.get(codename='delete_task')
-#
-#           new_user.user_permissions.add(add_company, view_company, change_company, delete_company, add_document \
-#                                         , view_document, add_category, view_category, change_category, delete_category \
-#                                         , add_companyratios, view_companyratios, change_companyratios \
-#                                         , delete_companyratios, add_trade, view_trade, change_trade, delete_trade
-#                                         , add_task, view_task, change_task, delete_task)
-#
-#
-#           new_user.save()
-#           return redirect('accounts')
-#
-#       return redirect('accounts')
-#
-#
-#
-# class ChangePasswordView(PermissionRequiredMixin, View):
-#   permission_required = 'auth.change_user'
-#
-#   def get(self, request, user_id):
-#       form = ChangePasswordForm()
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request, user_id):
-#       form = ChangePasswordForm(request.POST)
-#       if form.is_valid():
-#           user = get_object_or_404(User, pk=user_id)
-#           password = form.cleaned_data.get('password')
-#           repeat_password = form.cleaned_data.get('repeat_password')
-#           if password != repeat_password:
-#               form.add_error('Wprowadzone dane różnią się')
-#
-#           user.set_password(form.cleaned_data.get('password'))
-#           user.save()
-#           return redirect('accounts')
-#       return redirect('accounts')
-#
-#
+
+class LoginUser(View):
+    def get(self, request):
+        form = LoginForm()
+        return render(request, 'user_login.html', {'form': form})
+
+    def post(self, request):
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('login')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+            else:
+                form.add_error(None, 'Incorrect login or password')
+        return redirect('accounts')
+
+class LogoutUser(LoginRequiredMixin,View):
+    def get(self, request):
+        logout(request)
+        return redirect('index')
+
+
+class AddUser(View):
+    def get(self, request):
+        form = AddUserForm()
+        return render(request, 'user_form.html', {'form': form})
+
+    def post(self, request):
+        form = AddUserForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('login')
+            password = form.cleaned_data.get('password')
+            password_repeat = form.cleaned_data.get('password_repeat')
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+            mail = form.cleaned_data.get('mail')
+            if User.objects.filter(username=username).exists():
+                raise ValidationError('Login already exists')
+
+            if password != password_repeat:
+                form.add_error(None, 'Password entered incorrectly')
+
+
+            new_user = User.objects.create_user(username=username, password=password, email=mail)
+            add_company = Permission.objects.get(codename='add_company')
+            view_company = Permission.objects.get(codename='view_company')
+            change_company = Permission.objects.get(codename='change_company')
+            delete_company = Permission.objects.get(codename='delete_company')
+            add_document = Permission.objects.get(codename='add_document')
+            view_document = Permission.objects.get(codename='view_document')
+            add_category = Permission.objects.get(codename='add_category')
+            view_category = Permission.objects.get(codename='view_category')
+            change_category = Permission.objects.get(codename='change_category')
+            delete_category = Permission.objects.get(codename='delete_category')
+
+            add_companyratios = Permission.objects.get(codename='add_companyratios')
+            view_companyratios = Permission.objects.get(codename='view_companyratios')
+            change_companyratios = Permission.objects.get(codename='change_companyratios')
+            delete_companyratios = Permission.objects.get(codename='delete_companyratios')
+
+            add_trade = Permission.objects.get(codename='add_trade')
+            view_trade = Permission.objects.get(codename='view_trade')
+            change_trade = Permission.objects.get(codename='change_trade')
+            delete_trade = Permission.objects.get(codename='delete_trade')
+
+            add_task = Permission.objects.get(codename='add_task')
+            view_task = Permission.objects.get(codename='view_task')
+            change_task = Permission.objects.get(codename='change_task')
+            delete_task = Permission.objects.get(codename='delete_task')
+
+            new_user.user_permissions.add(add_company, view_company, change_company, delete_company, add_document \
+                                        , view_document, add_category, view_category, change_category, delete_category \
+                                        , add_companyratios, view_companyratios, change_companyratios \
+                                        , delete_companyratios, add_trade, view_trade, change_trade, delete_trade
+                                        , add_task, view_task, change_task, delete_task)
+
+
+            new_user.save()
+            return redirect('accounts')
+
+        return redirect('accounts')
+
+
+
+class ChangePasswordView(PermissionRequiredMixin, View):
+
+    def get(self, request, user_id):
+        form = ChangePasswordForm()
+        return render(request, 'user_form.html', {'form': form})
+
+    def post(self, request, user_id):
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            user = get_object_or_404(User, pk=user_id)
+            password = form.cleaned_data.get('password')
+            repeat_password = form.cleaned_data.get('repeat_password')
+            if password != repeat_password:
+                form.add_error('Password entered incorrectly')
+
+            user.set_password(form.cleaned_data.get('password'))
+            user.save()
+            return redirect('accounts')
+        return redirect('accounts')
+
 class IndexView(View):
     def get(self, request):
         return render(request, "index.html")
 #
 #
 class MyAccount(View):
-    pass
-#
-#   def get(self, request):
-#       user = request.user
-#       if user.is_authenticated:
-#           amount_of_company = Company.objects.filter(author=request.user).count()
-#           company_all = Company.objects.filter(author=request.user)
-#           task_all = Task.objects.filter(author=request.user).order_by("deadline")
-#           cnx = {
-#               "amount_of_company": amount_of_company,
-#               "company_all": company_all,
-#               "task_all": task_all
-#           }
-#           return render(request, 'accounts.html', cnx)
-#       else:
-#           message = f"Częśc tylko dla zalogowanych. W celu skorzystania zaloguj się bądź zarejestruj"
-#           return render(request, 'accounts.html',
-#                         context={'message': message})
-#
-#
-# class NewCompany(LoginRequiredMixin,View):
-#
-#   def get(self, request):
-#       form = CompanyForm()
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request):
-#       form = CompanyForm(request.POST)
-#       if form.is_valid():
-#           name = form.cleaned_data.get('company_name')
-#           numberNIP = form.cleaned_data.get('numberNip')
-#           active = form.cleaned_data.get('active')
-#           trade = form.cleaned_data.get('trade')
-#
-#
-#           trade, _ = Trade.objects.get_or_create(
-#               trade_name=trade
-#           )
-#           trade.save()
-#
-#           company, _ = Company.objects.get_or_create(
-#               number_NIP=numberNIP,
-#               defaults={'company_name': name, 'author': request.user, 'active': active, 'trade':trade}
-#           )
-#           company.save()
-#           return redirect('accounts')
-#       return redirect('accounts')
-#
-#
-# # class CompanyView(View):
-# #    def get(self, request):
-# #        company_all = Company.objects.filter(author=request.user)
-# #
-# #        return render(request, 'company.html', {'company_all': company_all})
-#
-# class ShowCompany(LoginRequiredMixin,View):
-#
-#   def get(self, request, company_id):
-#       company = get_object_or_404(Company, pk=company_id)
-#       result = CompanyRatios.objects.filter(author=request.user).filter(company=company_id)
-#       result = list(result)
-#       task = Task.objects.filter(author=request.user).filter(company=company_id).count()
-#       if not task > 0:
-#           msg = "Brak zdarzeń"
-#           return render(request, 'show_detail.html', {'company': company, 'result': result, 'msg': msg})
-#       task = Task.objects.filter(author=request.user).filter(company=company_id).order_by("deadline")
-#       # task = list(task)
-#
-#       return render(request, 'show_detail.html', {'company': company, 'result': result, 'task': task})
-#
-#
-#
-# class EditCompany(LoginRequiredMixin,View):
-#   # permission_required = 'homework_app.change_category'
-#
-#   def get(self, request, company_id):
-#       company = get_object_or_404(Company, pk=company_id)
-#       form = CompanyForm(initial={'name': company.name, 'numberNip': company.number_NIP, 'trade': company.trade})
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request, company_id):
-#       company = get_object_or_404(Company, pk=company_id)
-#       form = CompanyForm(request.POST, initial={'name': company.name, 'numberNip': company.number_NIP})
-#       if form.is_valid():
-#           trade = form.cleaned_data.get('trade')
-#
-#           trade, _ = Trade.objects.get_or_create(
-#               trade_name=trade
-#           )
-#           trade.save()
-#
-#           edit_company, _ = Company.objects.update_or_create(pk=company_id)
-#           edit_company.name = form.cleaned_data.get('company_name')
-#           edit_company.number_NIP = form.cleaned_data.get('numberNip')
-#           edit_company.active = form.cleaned_data.get('active')
-#           edit_company.trade = trade
-#           edit_company.save()
-#
-#           return redirect('accounts')
-#       return redirect('accounts')
-#
-# class DeleteCompany(LoginRequiredMixin,View):
-#
-#   def get(self, request, company_id):
-#       company = get_object_or_404(Company, pk=company_id)
-#       return render(request, 'delete_company.html', {'company': company})
-#
-#   def post(self, request, company_id):
-#       company = get_object_or_404(Company, pk=company_id)
-#       company.delete()
-#       return redirect('accounts')
-#
-#
-# class NewTrade(LoginRequiredMixin,View):
-#
-#   def get(self, request):
-#       form = TradeForm()
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request):
-#       form = TradeForm(request.POST)
-#       if form.is_valid():
-#           name = form.cleaned_data.get('trade_name')
-#           description = form.cleaned_data.get('description')
-#
-#           trade, _ = Trade.objects.get_or_create(
-#               trade_name=name,
-#               defaults={'description': description}
-#           )
-#           trade.save()
-#           return redirect('accounts')
-#       return redirect('accounts')
-#
-#
-# class TradeSearchCompany(LoginRequiredMixin,View):
-#
-#   def get(self, request):
-#       form = SearchForm()
-#       return render(request, 'search.html', {'form': form})
-#
-#   def post(self, request):
-#       form = SearchForm(request.POST or None)
-#
-#       if form.is_valid():
-#           name = form.cleaned_data.get('company_name')
-#           company_all = Company.objects.filter(trade__trade_name__icontains=name)
-#           return render(request, 'search.html', {'company_all': company_all, 'form': SearchForm()})
-#
-#       return render(request, 'search.html', {'form': form})
-#
-#
-#
-class NewRatios(View):
+    """View for the logged in user and displays his information"""
+
+    def get(self, request):
+        user = request.user
+        if user.is_authenticated:
+            amount_of_company = Company.objects.filter(author=request.user).count()
+            company_all = Company.objects.filter(author=request.user)
+            task_all = Task.objects.filter(author=request.user).order_by("deadline")
+            cnx = {
+                "amount_of_company": amount_of_company,
+                "company_all": company_all,
+                "task_all": task_all
+            }
+            return render(request, 'accounts.html', cnx)
+        else:
+            message = f"Lack of access"
+            return render(request, 'accounts.html', context={'message': message})
+
+
+class CompanyAdd(LoginRequiredMixin,View):
+    """The ability to add a company to the database"""
+
+    def get(self, request):
+        form = CompanyForm()
+        return render(request, 'base_form.html', {'form': form})
+
+    def post(self, request):
+        form = CompanyForm(request.POST)
+        if form.is_valid():
+            company_name = form.cleaned_data.get('company_name')
+            number_nip = form.cleaned_data.get('number_NIP')
+            active = form.cleaned_data.get('active')
+            trade = form.cleaned_data.get('trade')
+
+            trade, _ = Trade.objects.get_or_create(
+                trade_name=trade
+            )
+            trade.save()
+
+            company, _ = Company.objects.get_or_create(
+                number_NIP=number_nip,
+                defaults={'company_name': company_name, 'author': request.user, 'active': active, 'trade': trade}
+            )
+            company.save()
+            return redirect('accounts')
+        return redirect('accounts')
+
+
+class CompanyView(View):
+    """The ability to view a company from user database"""
+    def get(self, request):
+        company_all = Company.objects.filter(author=request.user)
+
+        return render(request, 'company.html', {'company_all': company_all})
+
+class CompanyDetail(LoginRequiredMixin,View):
+    """The ability to view a detail company from user database"""
+
+    def get(self, request, company_id):
+        company = get_object_or_404(Company, pk=company_id)
+        result = CompanyRatios.objects.filter(author=request.user).filter(company=company_id)
+        result = list(result)
+        task = Task.objects.filter(author=request.user).filter(company=company_id).count()
+        if not task > 0:
+            message = "No task"
+            return render(request, 'company_detail.html', {'company': company, 'result': result, 'message': message})
+        task = Task.objects.filter(author=request.user).filter(company=company_id).order_by("deadline")
+
+        return render(request, 'company_detail.html', {'company': company, 'result': result, 'task': task})
+
+
+
+class CompanyEdit(LoginRequiredMixin,View):
+    """The ability to edit a detail company from user database"""
+
+    def get(self, request, company_id):
+        company = get_object_or_404(Company, pk=company_id)
+        form = CompanyForm(initial={'company_name': company.company_name, 'number_NIP': company.number_NIP, 'trade': company.trade})
+        return render(request, 'base_form.html', {'form': form})
+
+    def post(self, request, company_id):
+        company = get_object_or_404(Company, pk=company_id)
+        form = CompanyForm(request.POST, initial={'company_name': company.company_name, 'number_NIP': company.number_NIP})
+        if form.is_valid():
+            trade = form.cleaned_data.get('trade')
+
+            trade, _ = Trade.objects.get_or_create(
+              trade_name=trade
+            )
+            trade.save()
+
+            company, _ = Company.objects.update_or_create(pk=company_id)
+            company.company_name = form.cleaned_data.get('company_name')
+            company.number_NIP = form.cleaned_data.get('number_NIP')
+            company.active = form.cleaned_data.get('active')
+            company.trade = trade
+            company.save()
+
+            return redirect('accounts')
+        return redirect('accounts')
+
+class CompanyDelete(LoginRequiredMixin,View):
+    """The ability to delete a company from user database"""
+
+    def get(self, request, company_id):
+        company = get_object_or_404(Company, pk=company_id)
+        return render(request, 'delete_form.html', {'form': company})
+
+    def post(self, request, company_id):
+        company = get_object_or_404(Company, pk=company_id)
+        company.delete()
+        return redirect('accounts')
+
+
+class TradeAdd(LoginRequiredMixin,View):
+    """Add Trade to user database"""
+
+    def get(self, request):
+        form = TradeForm()
+        return render(request, 'base_form.html', {'form': form})
+
+    def post(self, request):
+        form = TradeForm(request.POST)
+        if form.is_valid():
+            trade_name = form.cleaned_data.get('trade_name')
+            description = form.cleaned_data.get('description')
+
+            trade, _ = Trade.objects.get_or_create(
+                trade_name=trade_name,
+                defaults={'description': description}
+            )
+            trade.save()
+            return redirect('accounts')
+        return redirect('accounts')
+
+
+class TradeSearchCompany(LoginRequiredMixin,View):
+    """Search company from user database"""
+
+    def get(self, request):
+        form = SearchForm()
+        return render(request, 'trade_search.html', {'form': form})
+
+    def post(self, request):
+        form = SearchForm(request.POST or None)
+        if form.is_valid():
+            name = form.cleaned_data.get('name')
+            company_all = Company.objects.filter(trade__trade_name__icontains=name)
+            return render(request, 'trade_search.html', {'company_all': company_all, 'form': SearchForm()})
+
+        return render(request, 'trade_search.html', {'form': form})
+
+
+
+class RatiosAdd(View):
     """Iterator for analyzing the company's financial result of manually entered data."""
     def get(self, request):
         form = AddResultsForm()
@@ -926,70 +925,70 @@ class NewRatiosFile(View):
 #
 #
 #
-# class AddTask(LoginRequiredMixin, View):
-#   def get(self, request):
-#       form = TaskForm()
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request):
-#       form = TaskForm(request.POST)
-#       if form.is_valid():
-#           title = form.cleaned_data.get('title')
-#           deadline = form.cleaned_data.get('deadline')
-#           company = form.cleaned_data.get('company')
-#           description = form.cleaned_data.get('description')
-#           new_task = Task()
-#           new_task.author = request.user
-#           new_task.title = title
-#           new_task.deadline = deadline
-#           new_task.description = description
-#           new_task.company = company
-#           new_task.save()
-#           return redirect('accounts')
-#       return redirect('accounts')
-#
-# class TaskView(LoginRequiredMixin, View):
-#   def get(self, request):
-#       task_all = Task.objects.filter(author=request.user)
-#
-#       return render(request, 'accounts.html', {'task_all': task_all})
-#
-# class EditTask(LoginRequiredMixin, View):
-#
-#   def get(self, request, task_id):
-#       task = get_object_or_404(Task, pk=task_id)
-#       form = TaskEditForm(initial={'title': task.title, 'deadline': task.deadline, 'description': task.description})
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request, task_id):
-#       task= get_object_or_404(Task, pk=task_id)
-#       form = TaskEditForm(request.POST, initial={'title': task.title, 'deadline': task.deadline, 'description': task.description})
-#       if form.is_valid():
-#
-#           edit_task, _ = Task.objects.update_or_create(pk=task_id)
-#           edit_task.title = form.cleaned_data.get('title')
-#           edit_task.deadline = form.cleaned_data.get('deadline')
-#           edit_task.description = form.cleaned_data.get('description')
-#           edit_task.company = edit_task.company
-#           edit_task.save()
-#
-#           return redirect('accounts')
-#       return redirect('accounts')
-#
-# class DeleteTask(LoginRequiredMixin, View):
-#
-#   def get(self, request, task_id):
-#       task = get_object_or_404(Task, pk=task_id)
-#       return render(request, 'delete_company.html', {'company': task})
-#
-#   def post(self, request, task_id):
-#       task = get_object_or_404(Task, pk=task_id)
-#       task.delete()
-#       return redirect('accounts')
-#
-# class TaskViewDetail(LoginRequiredMixin, View):
-#   def get(self, request, task_id):
-#       task = get_object_or_404(Task, pk=task_id)
-#
-#       return render(request, 'show_detail_task.html', {'task': task})
-#
+class TaskAdd(LoginRequiredMixin, View):
+  def get(self, request):
+      form = TaskForm()
+      return render(request, 'base_form.html', {'form': form})
+
+  def post(self, request):
+      form = TaskForm(request.POST)
+      if form.is_valid():
+          title = form.cleaned_data.get('title')
+          deadline = form.cleaned_data.get('deadline')
+          company = form.cleaned_data.get('company')
+          description = form.cleaned_data.get('description')
+          task = Task()
+          task.author = request.user
+          task.title = title
+          task.deadline = deadline
+          task.description = description
+          task.company = company
+          task.save()
+          return redirect('accounts')
+      return redirect('accounts')
+
+class TaskDetail(LoginRequiredMixin, View):
+  def get(self, request):
+      task_all = Task.objects.filter(author=request.user)
+
+      return render(request, 'accounts.html', {'task_all': task_all})
+
+class TaskEdit(LoginRequiredMixin, View):
+
+  def get(self, request, task_id):
+      task = get_object_or_404(Task, pk=task_id)
+      form = TaskEditForm(initial={'title': task.title, 'deadline': task.deadline, 'description': task.description})
+      return render(request, 'base_form.html', {'form': form})
+
+  def post(self, request, task_id):
+      task= get_object_or_404(Task, pk=task_id)
+      form = TaskEditForm(request.POST, initial={'title': task.title, 'deadline': task.deadline, 'description': task.description})
+      if form.is_valid():
+
+          task, _ = Task.objects.update_or_create(pk=task_id)
+          task.title = form.cleaned_data.get('title')
+          task.deadline = form.cleaned_data.get('deadline')
+          task.description = form.cleaned_data.get('description')
+          task.company = task.company
+          task.save()
+          return redirect('accounts')
+
+      return redirect('accounts')
+
+class TaskDelete(LoginRequiredMixin, View):
+
+  def get(self, request, task_id):
+      task = get_object_or_404(Task, pk=task_id)
+      return render(request, 'delete_form.html', {'form': task })
+
+  def post(self, request, task_id):
+      task = get_object_or_404(Task, pk=task_id)
+      task.delete()
+      return redirect('accounts')
+
+class TaskDetail(LoginRequiredMixin, View):
+    def get(self, request, task_id):
+        task = get_object_or_404(Task, pk=task_id)
+
+        return render(request, 'task_detail.html', {'task': task})
+

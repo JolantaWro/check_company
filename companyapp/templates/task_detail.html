@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} {% endblock %}
+{% block content %}
+   <a href="{% url 'task_edit' task.id %}">Edit</a>
+   <a href="{% url 'task_delete' task.id %}">Delete</a>
+   <h2>Tytuł: {{ task.title }}</h2>
+   <h3>Dotyczy: {{ task.company.company_name }}</h3>
+   <h3>Termin: {{ task.deadline }} </h3>
+   <h3>Opis: <br>{{ task.description }} </h3>
+
+{% endblock %}
