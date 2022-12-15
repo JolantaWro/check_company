@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+{% if request.user.is_authenticated %}
+
+    <p>Witaj, {{ request.user }} </p><br>
+        <a href="{% url 'user_logout' %}">Logout</a>
+        <a href="{% url 'company_add' %}">New Contractors</a>
+        <a href="{% url 'index' %}">Dodaj badanie</a>
+        <a href="{% url 'task_add' %}">New Task</a>
+        <a href="{% url 'trade_search' %}">Search Contractors</a>
+
+  {% if company_all|length == 0 %}
+      <h2>No contractors</h2>
+
+  {% else %}
+      Contractors {{ amount_of_company }}<br>
+      <ul>
+          {% for company in company_all %}
+          <li>
+             <a href="{% url 'company_detail' company.id %}">{{ company }}</a><br>
+              <a href="{% url 'company_edit' company.id %}">Edit</a>
+              <a href="{% url 'company_delete' company.id %}">Delete</a>
+          </li>
+          {% endfor %}
+      </ul>
+  {% endif %}
+    {% if task_all|length == 0 %}
+       <h3>No tasks</h3>
+    {% else %}
+      <ul>Tasks:<br><br>
+          {% for task in task_all %}
+          <li>
+              <a href="{% url 'task_detail' task.id %}"> {{task.title}} Company:  {{ task.company }}</a><br>Date: {{ task.deadline }}
+              <a href="{% url 'task_edit' task.id %}">Edit</a>
+              <a href="{% url 'task_delete' task.id %}">Delete</a>
+          </li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+
+
+
+{% else %}
+  <h3>{{ message }}</h3><br><br>
+  <p>If you have an account:</p>
+  <p><a href="{% url 'user_login' %}">Login</a></p>
+  <br>
+  <p>If no:</p>
+  <p><a href="{% url 'user_add' %}">Register</a></p>
+{% endif %}
+
+{% endblock %}

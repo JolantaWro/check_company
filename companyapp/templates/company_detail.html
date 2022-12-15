@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} {% endblock %}
+{% block content %}
+
+    <a href="#">Dodaj badanie</a>
+    <a href="{% url 'company_edit' company.id %}">Edit</a>
+    <a href="{% url 'company_delete' company.id %}">Delete</a>
+
+    <h3>Company: {{ company }}</h3>
+    <h3>NIP: {{ company.number_NIP }} </h3>
+    <h3>It still active: {{ company.active }} </h3>
+    <h3>Trade: {{ company.trade.trade_name }} </h3>
+   <h3>Ratios: </h3>
+        <ul>
+            {% for element in result %}
+                <li>
+                <a href="#">Ocena {{element.id}}</a><br>Date: {{ element.date_added }}
+                    <br>Category: {{ element.category.get_rating_name_display }}
+                </li>
+            {% endfor %}
+        </ul>
+      <br><br>
+    <h3>Task: </h3>
+    {% if message %}
+        <h5>{{ message }}</h5>
+      <a href="{% url 'task_add' %}">New Task</a>
+    {% else %}
+    <ul>
+        {% for element in task %}
+            <li>
+            <a href="{% url 'task_detail' element.id %}"> {{element.title}}</a><br>Date: {{ element.deadline }}
+            <a href="{% url 'task_edit' element.id %}">Edit</a>
+            <a href="{% url 'task_delete' element.id %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+{% endblock %}
