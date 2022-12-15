@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-# from .forms import AddResultsForm, CompanyForm, AddLinkForm, LoginFormP, AddUserForm, ChangePasswordForm, TradeForm, \
-#    SearchForm, TaskForm, ResultForm, TaskEditForm
+from .forms import AddResultsForm, CompanyForm, AddFileForm, LoginFormP, AddUserForm, ChangePasswordForm, TradeForm, \
+   SearchForm, TaskForm, ResultForm, TaskEditForm
 from django.http import HttpResponse
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
@@ -279,591 +279,614 @@ class MyAccount(View):
 #
 #
 #
-# class NewRatios(View):
-#
-#   def get(self, request):
-#       form = AddResultsForm()
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request):
-#       form = AddResultsForm(request.POST)
-#       if form.is_valid():
-#           company_results = form.cleaned_data.get('company')
-#           number_company = form.cleaned_data.get('number_NIP')
-#           number_company = int(number_company)
-#           year_result = form.cleaned_data.get('year_results')
-#           aktywa_trwałe = form.cleaned_data.get('aktywa_trwałe')
-#           aktywa_obrotowe = form.cleaned_data.get('aktywa_obrotowe')
-#           zapasy = form.cleaned_data.get('zapasy')
-#           nalez_krotkoterminowe = form.cleaned_data.get('nalez_krotkoterminowe')
-#           nalez_dost_uslug = form.cleaned_data.get('nalez_dost_uslug')
-#           nalez_podatkowe = form.cleaned_data.get('nalez_podatkowe')
-#           inwest_krotkoterminowe = form.cleaned_data.get('inwest_krotkoterminowe')
-#           pap_wartosciowe = form.cleaned_data.get('pap_wartosciowe')
-#           srodki_pieniez = form.cleaned_data.get('srodki_pieniez')
-#           kap_podstawowy = form.cleaned_data.get('kap_podstawowy')
-#           rez_rozli_okres = form.cleaned_data.get('rez_rozli_okres')
-#           zob_dlugo = form.cleaned_data.get('zob_dlugo')
-#           zob_dlugo_finansowe = form.cleaned_data.get('zob_dlugo_finansowe')
-#           zob_krotko = form.cleaned_data.get('zob_krotko')
-#           zob_krotko_finansowe = form.cleaned_data.get('zob_krotko_finansowe')
-#           przychody = form.cleaned_data.get('przychody')
-#           dzial_operacyjny = form.cleaned_data.get('dzial_operacyjny')
-#           amortyzacja = form.cleaned_data.get('amortyzacja')
-#           brutto = form.cleaned_data.get('brutto')
-#           podatek = form.cleaned_data.get('podatek')
-#           suma_aktywow = aktywa_trwałe + aktywa_obrotowe
-#           kapitl_wlasny = suma_aktywow - rez_rozli_okres - zob_dlugo - zob_krotko
-#           suma_pasywow = zob_dlugo + rez_rozli_okres + kapitl_wlasny + zob_krotko
-#           zysk_netto = brutto - podatek
-#
-#           kapitalizacja = round(kapitl_wlasny / suma_pasywow * 100, 1)
-#           plynnosc = round(aktywa_obrotowe / zob_krotko, 2)
-#           zobowiazania = round(zob_krotko + zob_dlugo + rez_rozli_okres, 0)
-#           zobowiazania_kapitale = round(zobowiazania / kapitl_wlasny * 100, 1)
-#           obrot_naleznosciami = round(nalez_dost_uslug / przychody * 360 * 1, 0)
-#           marza_operacyjna = round(dzial_operacyjny / przychody * 100, 1)
-#           marza_netto = round(zysk_netto / przychody * 100, 1)
-#           zadl_finansowe_netto = round(zob_dlugo_finansowe + zob_krotko_finansowe - srodki_pieniez, 0)
-#           ebitda = round(dzial_operacyjny + amortyzacja, 0)
-#
-#
-#           user = request.user
-#           if user.is_authenticated:
-#               company, _ = Company.objects.get_or_create(
-#                   number_NIP=number_company,
-#                   defaults={'company_name': company_results, 'author': request.user})
-#               company.save()
-#
-#               if kapitalizacja > 20 and plynnosc > 1 and zobowiazania_kapitale < 300:
-#                   add_category = Category()
-#                   add_category.id = 1
-#                   add_category.rating_name = 1
-#                   add_category.save()
-#
-#                   new_add = CompanyRatios()
-#                   new_add.company = company
-#                   new_add.category = add_category
-#                   new_add.year_name = year_result
-#                   new_add.aktywa_trwale = aktywa_trwałe
-#                   new_add.aktywa_obrotowe = aktywa_obrotowe
-#                   new_add.zapasy = zapasy
-#                   new_add.naleznosci_krotkoterminowe = nalez_krotkoterminowe
-#                   new_add.naleznosci_dostaw_uslug = nalez_dost_uslug
-#                   new_add.naleznosci_podatkowe = nalez_podatkowe
-#                   new_add.inwestycje_krotkoterminowe = inwest_krotkoterminowe
-#                   new_add.srodki_pieniezne = srodki_pieniez
-#                   new_add.suma_aktywow = suma_aktywow
-#                   new_add.kapital_wlasny = kapitl_wlasny
-#                   new_add.kapital_podstawowy = kap_podstawowy
-#                   new_add.rezerwy_rozliczenia_miedzyokresowe = rez_rozli_okres
-#                   new_add.zobowiazania_dlugoterminowe = zob_dlugo
-#                   new_add.dl_zobowiazania_finansowe = zob_dlugo_finansowe
-#                   new_add.zobowiazania_krotkoterminowe = zob_krotko
-#                   new_add.kr_zobowiazania_finansowe = zob_krotko_finansowe
-#                   new_add.suma_pasywow = suma_pasywow
-#                   new_add.przychody = przychody
-#                   new_add.zysk_strata_dzialalnosc_operacyjna = dzial_operacyjny
-#                   new_add.amortyzacja = amortyzacja
-#                   new_add.zysk_strata_brutto = brutto
-#                   new_add.podatek_dochodowy = podatek
-#                   new_add.zysk_strata_netto = zysk_netto
-#                   new_add.capitalization = kapitalizacja
-#                   new_add.current_ratio = plynnosc
-#                   new_add.debt_ratio = zobowiazania
-#                   new_add.debt_to_equity_ratio = zobowiazania_kapitale
-#                   new_add.receivable_turnover_ratio = obrot_naleznosciami
-#                   new_add.operating_profit_margin = marza_operacyjna
-#                   new_add.net_profit_margin = marza_netto
-#                   new_add.net_financial_debt = zadl_finansowe_netto
-#                   new_add.EBITDA_12 = ebitda
-#                   new_add.author = request.user
-#                   new_add.save()
-#
-#                   deadline = datetime.today() + timedelta(days=180)
-#
-#
-#                   new_task = Task()
-#                   new_task.author = request.user
-#                   new_task.title = "Badanie kondycji"
-#                   new_task.deadline = deadline
-#                   new_task.company = company
-#                   new_task.save()
-#
-#                   return redirect('show', result_id=new_add.id)
-#
-#               if kapitalizacja < 20 and plynnosc < 1 and zobowiazania_kapitale > 300:
-#                   add_category = Category()
-#                   add_category.id = 2
-#                   add_category.rating_name = 2
-#                   add_category.save()
-#
-#                   new_add = CompanyRatios()
-#                   new_add.company = company
-#                   new_add.category = add_category
-#                   new_add.year_name = year_result
-#                   new_add.aktywa_trwale = aktywa_trwałe
-#                   new_add.aktywa_obrotowe = aktywa_obrotowe
-#                   new_add.zapasy = zapasy
-#                   new_add.naleznosci_krotkoterminowe = nalez_krotkoterminowe
-#                   new_add.naleznosci_dostaw_uslug = nalez_dost_uslug
-#                   new_add.naleznosci_podatkowe = nalez_podatkowe
-#                   new_add.inwestycje_krotkoterminowe = inwest_krotkoterminowe
-#                   new_add.srodki_pieniezne = srodki_pieniez
-#                   new_add.suma_aktywow = suma_aktywow
-#                   new_add.kapital_wlasny = kapitl_wlasny
-#                   new_add.kapital_podstawowy = kap_podstawowy
-#                   new_add.rezerwy_rozliczenia_miedzyokresowe = rez_rozli_okres
-#                   new_add.zobowiazania_dlugoterminowe = zob_dlugo
-#                   new_add.dl_zobowiazania_finansowe = zob_dlugo_finansowe
-#                   new_add.zobowiazania_krotkoterminowe = zob_krotko
-#                   new_add.kr_zobowiazania_finansowe = zob_krotko_finansowe
-#                   new_add.suma_pasywow = suma_pasywow
-#                   new_add.przychody = przychody
-#                   new_add.zysk_strata_dzialalnosc_operacyjna = dzial_operacyjny
-#                   new_add.amortyzacja = amortyzacja
-#                   new_add.zysk_strata_brutto = brutto
-#                   new_add.podatek_dochodowy = podatek
-#                   new_add.zysk_strata_netto = zysk_netto
-#                   new_add.capitalization = kapitalizacja
-#                   new_add.current_ratio = plynnosc
-#                   new_add.debt_ratio = zobowiazania
-#                   new_add.debt_to_equity_ratio = zobowiazania_kapitale
-#                   new_add.receivable_turnover_ratio = obrot_naleznosciami
-#                   new_add.operating_profit_margin = marza_operacyjna
-#                   new_add.net_profit_margin = marza_netto
-#                   new_add.net_financial_debt = zadl_finansowe_netto
-#                   new_add.EBITDA_12 = ebitda
-#                   new_add.author = request.user
-#                   new_add.save()
-#
-#                   deadline = datetime.today() + timedelta(days=180)
-#
-#                   new_task = Task()
-#                   new_task.author = request.user
-#                   new_task.title = "Badanie kondycji"
-#                   new_task.deadline = deadline
-#                   new_task.company = company
-#                   new_task.save()
-#
-#                   return redirect('show', result_id=new_add.id)
-#
-#               else:
-#                   add_category = Category()
-#                   add_category.id = 3
-#                   add_category.rating_name = 3
-#                   add_category.save()
-#
-#                   new_add = CompanyRatios()
-#                   new_add.company = company
-#                   new_add.category = add_category
-#                   new_add.year_name = year_result
-#                   new_add.aktywa_trwale = aktywa_trwałe
-#                   new_add.aktywa_obrotowe = aktywa_obrotowe
-#                   new_add.zapasy = zapasy
-#                   new_add.naleznosci_krotkoterminowe = nalez_krotkoterminowe
-#                   new_add.naleznosci_dostaw_uslug = nalez_dost_uslug
-#                   new_add.naleznosci_podatkowe = nalez_podatkowe
-#                   new_add.inwestycje_krotkoterminowe = inwest_krotkoterminowe
-#                   new_add.srodki_pieniezne = srodki_pieniez
-#                   new_add.suma_aktywow = suma_aktywow
-#                   new_add.kapital_wlasny = kapitl_wlasny
-#                   new_add.kapital_podstawowy = kap_podstawowy
-#                   new_add.rezerwy_rozliczenia_miedzyokresowe = rez_rozli_okres
-#                   new_add.zobowiazania_dlugoterminowe = zob_dlugo
-#                   new_add.dl_zobowiazania_finansowe = zob_dlugo_finansowe
-#                   new_add.zobowiazania_krotkoterminowe = zob_krotko
-#                   new_add.kr_zobowiazania_finansowe = zob_krotko_finansowe
-#                   new_add.suma_pasywow = suma_pasywow
-#                   new_add.przychody = przychody
-#                   new_add.zysk_strata_dzialalnosc_operacyjna = dzial_operacyjny
-#                   new_add.amortyzacja = amortyzacja
-#                   new_add.zysk_strata_brutto = brutto
-#                   new_add.podatek_dochodowy = podatek
-#                   new_add.zysk_strata_netto = zysk_netto
-#                   new_add.capitalization = kapitalizacja
-#                   new_add.current_ratio = plynnosc
-#                   new_add.debt_ratio = zobowiazania
-#                   new_add.debt_to_equity_ratio = zobowiazania_kapitale
-#                   new_add.receivable_turnover_ratio = obrot_naleznosciami
-#                   new_add.operating_profit_margin = marza_operacyjna
-#                   new_add.net_profit_margin = marza_netto
-#                   new_add.net_financial_debt = zadl_finansowe_netto
-#                   new_add.EBITDA_12 = ebitda
-#                   new_add.author = request.user
-#                   new_add.save()
-#
-#                   deadline = datetime.today() + timedelta(days=180)
-#
-#                   new_task = Task()
-#                   new_task.author = request.user
-#                   new_task.title = "Badanie kondycji"
-#                   new_task.deadline = deadline
-#                   new_task.company = company
-#                   new_task.save()
-#
-#                   return redirect('show', result_id=new_add.id)
-#
-#           else:
-#               if kapitalizacja > 20 and plynnosc > 1 and zobowiazania_kapitale < 300:
-#                   category = "Niskie ryzyko niewypłacalności"
-#               elif kapitalizacja < 20 and plynnosc < 1 and zobowiazania_kapitale > 300:
-#                   category = "Wysokie ryzyko niewypłacalności"
-#               else:
-#                   category = "Umiarkowane ryzyko niewypłacalności, wymagana pogłębiona analiza"
-#
-#               return render(request, 'bezLogowaniaReczne.html', locals())
-#
-#
-# def convert_to_float(root, value):
-#   element = root.find(value)
-#   if element:
-#       element_value = element.find('.//{*}KwotaA').text
-#       element_value = round(float(element_value)/1000, 2)
-#   else:
-#       element_value = 0.00
-#   return element_value
-#
-#
-# def give_depreciation(root, value_first, value_second):
-#   depreciation = root.find(value_first)
-#   if depreciation:
-#       depreciation = depreciation.find('.//{*}KwotaA').text
-#       depreciation = round(float(depreciation) / 1000, 2)
-#   else:
-#       depreciation = root.find(value_second)
-#       depreciation = depreciation.find('.//{*}KwotaA').text
-#       depreciation = round(float(depreciation) / 1000, 2)
-#   return depreciation
-#
-#
-#
-# class NewRatiosLink(View):
-#
-#   def get(self, request):
-#       form = AddLinkForm()
-#       return render(request, 'to_result_form.html', {'form': form})
-#
-#   def post(self, request):
-#       form = AddLinkForm(request.POST, request.FILES)
-#       if form.is_valid():
-#           instance = Document(docfile=request.FILES['docfile'])
-#           instance.save()
-#
-#           tree = ET.parse(instance.docfile)
-#           root = tree.getroot()
-#           ET.register_namespace("", "http://www.mf.gov.pl/schematy/SF/DefinicjeTypySprawozdaniaFinansowe/2018/07/09/JednostkaInnaWZlotych")
-#
-#           element_rok = root.find('.//{*}Naglowek')
-#           rok = element_rok.find('.//{*}OkresDo')
-#           wartrosc_rok = rok.text
-#           wartrosc_rok = wartrosc_rok[0:4]
-#           wartrosc_rok = int(wartrosc_rok)
-#
-#           nazwa_firmy = root.find('.//{*}NazwaFirmy')
-#           nazwa_firmy = nazwa_firmy.text
-#
-#           number_NIP = root.find('.//{*}P_1D')
-#           number_NIP = number_NIP.text
-#           number_NIP = int(number_NIP)
-#
-#           pkd_firmy = root.find('.//{*}KodPKD')
-#           pkd_firmy = pkd_firmy.text
-#
-#           aktywa_trwale = './/{*}Aktywa_A'
-#           aktywa_trwale = convert_to_float(root, aktywa_trwale)
-#
-#           aktywa_obrotowe = './/{*}Aktywa_B'
-#           aktywa_obrotowe = convert_to_float(root, aktywa_obrotowe)
-#
-#           element_obrotowe = root.find('.//{*}Aktywa_B')
-#           zapasy = './/{*}Aktywa_B_I'
-#           zapasy = convert_to_float(element_obrotowe, zapasy)
-#
-#           naleznosci_krotkoterminowe = './/{*}Aktywa_B_II'
-#           naleznosci_krotkoterminowe = convert_to_float(root, naleznosci_krotkoterminowe)
-#
-#           naleznosci_dostawy_uslugi_powiazani = './/{*}Aktywa_B_II_1_A'
-#           naleznosci_dostawy_uslugi_powiazani = convert_to_float(root, naleznosci_dostawy_uslugi_powiazani)
-#           naleznosci_dostawy_uslugi_udzialy = './/{*}Aktywa_B_II_2_A'
-#           naleznosci_dostawy_uslugi_udzialy = convert_to_float(root, naleznosci_dostawy_uslugi_udzialy)
-#           naleznosci_dostawy_uslugi_pozostale = './/{*}Aktywa_B_II_3_A'
-#           naleznosci_dostawy_uslugi_pozostale = convert_to_float(root, naleznosci_dostawy_uslugi_pozostale)
-#           naleznosci_dostaw_uslug = naleznosci_dostawy_uslugi_powiazani + naleznosci_dostawy_uslugi_udzialy + naleznosci_dostawy_uslugi_pozostale
-#
-#           naleznosci_podatkowe = './/{*}Aktywa_B_II_3_B'
-#           naleznosci_podatkowe = convert_to_float(root, naleznosci_podatkowe)
-#
-#           inwestycje_krotkoterminowe = './/{*}Aktywa_B_III'
-#           inwestycje_krotkoterminowe = convert_to_float(root, inwestycje_krotkoterminowe)
-#
-#           srodki_pieniezne = './/{*}Aktywa_B_III_1_C'
-#           srodki_pieniezne = convert_to_float(root, srodki_pieniezne)
-#
-#           kapital_wlasny = './/{*}Pasywa_A'
-#           kapital_wlasny = convert_to_float(root, kapital_wlasny)
-#
-#           kapital_podstawowy = './/{*}Pasywa_A_I'
-#           kapital_podstawowy = convert_to_float(root, kapital_podstawowy)
-#
-#           rezerwy = './/{*}Pasywa_B_I'
-#           rezerwy = convert_to_float(root, rezerwy)
-#           rozliczenia_miedzyokresowe = './/{*}Pasywa_B_IV'
-#           rozliczenia_miedzyokresowe = convert_to_float(root, rozliczenia_miedzyokresowe)
-#           rezerwy_rozliczenia_miedzyokresowe = round(rezerwy + rozliczenia_miedzyokresowe,2)
-#
-#           zobowiazania_dlugoterminowe = './/{*}Pasywa_B_II'
-#           zobowiazania_dlugoterminowe = convert_to_float(root, zobowiazania_dlugoterminowe)
-#
-#           dl_pozostale_kredyty = './/{*}Pasywa_B_II_3_A'
-#           dl_pozostale_kredyty = convert_to_float(root, dl_pozostale_kredyty)
-#           dl_pozostale_inne_fiansowe = './/{*}Pasywa_B_II_3_C'
-#           dl_pozostale_inne_fiansowe = convert_to_float(root, dl_pozostale_inne_fiansowe)
-#
-#           dl_zobowiazania_finansowe = dl_pozostale_kredyty + dl_pozostale_inne_fiansowe
-#
-#           zobowiazania_krotkoterminowe = './/{*}Pasywa_B_III'
-#           zobowiazania_krotkoterminowe = convert_to_float(root, zobowiazania_krotkoterminowe)
-#
-#           kr_pozostale_kredyty = './/{*}Pasywa_B_III_3_A'
-#           kr_pozostale_kredyty = convert_to_float(root, kr_pozostale_kredyty)
-#           kr_pozostale_inne_fiansowe = './/{*}Pasywa_B_III_3_C'
-#           kr_pozostale_inne_fiansowe = convert_to_float(root, kr_pozostale_inne_fiansowe)
-#           kr_zobowiazania_finansowe = kr_pozostale_kredyty + kr_pozostale_inne_fiansowe
-#
-#           zobowiazania_podatkowe = './/{*}Pasywa_B_III_3_G'
-#           zobowiazania_podatkowe = convert_to_float(root, zobowiazania_podatkowe)
-#
-#           przychody = './/{*}A'
-#           przychody = convert_to_float(root, przychody)
-#
-#           zysk_strata_dzialalnosc_operacyjna = './/{*}F'
-#           zysk_strata_dzialalnosc_operacyjna = convert_to_float(root, zysk_strata_dzialalnosc_operacyjna)
-#
-#           zysk_strata_dzialalnosc_operacyjna = './/{*}F'
-#           zysk_strata_dzialalnosc_operacyjna = convert_to_float(root, zysk_strata_dzialalnosc_operacyjna)
-#
-#           amortyzacja = give_depreciation(root, './/{*}B_I', './/{*}A_II_1')
-#
-#           zysk_strata_brutto = './/{*}I'
-#           zysk_strata_brutto = convert_to_float(root, zysk_strata_brutto)
-#
-#           podatek_dochodowy = './/{*}J'
-#           podatek_dochodowy = convert_to_float(root, podatek_dochodowy)
-#
-#           zysk_strata_netto = './/{*}L'
-#           zysk_strata_netto = convert_to_float(root, zysk_strata_netto)
-#
-#           suma_aktywow = './/{*}Aktywa'
-#           suma_aktywow = convert_to_float(root, suma_aktywow)
-#
-#           suma_pasywow = './/{*}Pasywa'
-#           suma_pasywow = convert_to_float(root, suma_pasywow)
-#
-#           kapitalizacja = round(kapital_wlasny / suma_pasywow * 100, 2)
-#           plynnosc = round(aktywa_obrotowe / zobowiazania_krotkoterminowe, 2)
-#           zobowiazania = zobowiazania_krotkoterminowe + zobowiazania_dlugoterminowe + rezerwy_rozliczenia_miedzyokresowe
-#           zobowiazania_kapitale = round(zobowiazania / kapital_wlasny * 100, 2)
-#           obrot_naleznosciami = round(naleznosci_dostaw_uslug / przychody * 360 * 1, 0)
-#           marza_operacyjna = round(zysk_strata_dzialalnosc_operacyjna / przychody * 100,2)
-#           marza_netto = round(zysk_strata_netto / przychody * 100, 2)
-#           zadl_finansowe_netto = round(dl_zobowiazania_finansowe + kr_zobowiazania_finansowe - srodki_pieniezne, 2)
-#           ebitda = round(zysk_strata_dzialalnosc_operacyjna + amortyzacja, 2)
-#
-#
-#           user = request.user
-#           if user.is_authenticated:
-#               trade, _ = Trade.objects.get_or_create(trade_name=pkd_firmy)
-#               trade.save()
-#
-#               company, _ = Company.objects.get_or_create(
-#                   number_NIP=number_NIP,
-#                   defaults={'company_name': nazwa_firmy, 'author': request.user, 'trade': trade})
-#               company.save()
-#
-#
-#               if kapitalizacja > 20 and plynnosc > 1 and zobowiazania_kapitale < 300:
-#                   add_category = Category()
-#                   add_category.id = 1
-#                   add_category.rating_name = 1
-#                   add_category.save()
-#
-#                   new_add = CompanyRatios()
-#                   new_add.company = company
-#                   new_add.category = add_category
-#                   new_add.year_name = wartrosc_rok
-#
-#                   new_add.aktywa_trwale = aktywa_trwale
-#                   new_add.aktywa_obrotowe = aktywa_obrotowe
-#                   new_add.zapasy = zapasy
-#                   new_add.naleznosci_krotkoterminowe = naleznosci_krotkoterminowe
-#                   new_add.naleznosci_dostaw_uslug = naleznosci_dostaw_uslug
-#                   new_add.naleznosci_podatkowe = naleznosci_podatkowe
-#                   new_add.inwestycje_krotkoterminowe = inwestycje_krotkoterminowe
-#                   new_add.srodki_pieniezne = srodki_pieniezne
-#                   new_add.suma_aktywow = suma_aktywow
-#                   new_add.kapital_wlasny = kapital_wlasny
-#                   new_add.kapital_podstawowy = kapital_podstawowy
-#                   new_add.rezerwy_rozliczenia_miedzyokresowe = rezerwy_rozliczenia_miedzyokresowe
-#                   new_add.zobowiazania_dlugoterminowe = zobowiazania_dlugoterminowe
-#                   new_add.dl_zobowiazania_finansowe = dl_zobowiazania_finansowe
-#                   new_add.zobowiazania_krotkoterminowe = zobowiazania_krotkoterminowe
-#                   new_add.kr_zobowiazania_finansowe = kr_zobowiazania_finansowe
-#                   new_add.suma_pasywow = suma_pasywow
-#                   new_add.przychody = przychody
-#                   new_add.zysk_strata_dzialalnosc_operacyjna = zysk_strata_dzialalnosc_operacyjna
-#                   new_add.amortyzacja = amortyzacja
-#                   new_add.zysk_strata_brutto = zysk_strata_brutto
-#                   new_add.podatek_dochodowy = podatek_dochodowy
-#                   new_add.zysk_strata_netto = zysk_strata_netto
-#
-#                   new_add.capitalization = kapitalizacja
-#                   new_add.current_ratio = plynnosc
-#                   new_add.debt_ratio = zobowiazania
-#                   new_add.debt_to_equity_ratio = zobowiazania_kapitale
-#                   new_add.receivable_turnover_ratio = obrot_naleznosciami
-#                   new_add.operating_profit_margin = marza_operacyjna
-#                   new_add.net_profit_margin = marza_netto
-#                   new_add.net_financial_debt = zadl_finansowe_netto
-#                   new_add.EBITDA_12 = ebitda
-#                   new_add.author = request.user
-#                   new_add.save()
-#
-#                   deadline = datetime.today() + timedelta(days=180)
-#
-#                   new_task = Task()
-#                   new_task.author = request.user
-#                   new_task.title = "Badanie kondycji"
-#                   new_task.deadline = deadline
-#                   new_task.company = company
-#                   new_task.save()
-#
-#                   return redirect('show', result_id=new_add.id)
-#
-#               if kapitalizacja < 20 and plynnosc < 1 and zobowiazania_kapitale > 300:
-#                   add_category = Category()
-#                   add_category.id = 2
-#                   add_category.rating_name = 2
-#                   add_category.save()
-#
-#                   new_add = CompanyRatios()
-#                   new_add.company = company
-#                   new_add.category = add_category
-#                   new_add.year_name = wartrosc_rok
-#                   new_add.aktywa_trwale = aktywa_trwale
-#                   new_add.aktywa_obrotowe = aktywa_obrotowe
-#                   new_add.zapasy = zapasy
-#                   new_add.naleznosci_krotkoterminowe = naleznosci_krotkoterminowe
-#                   new_add.naleznosci_dostaw_uslug = naleznosci_dostaw_uslug
-#                   new_add.naleznosci_podatkowe = naleznosci_podatkowe
-#                   new_add.inwestycje_krotkoterminowe = inwestycje_krotkoterminowe
-#                   new_add.srodki_pieniezne = srodki_pieniezne
-#                   new_add.suma_aktywow = suma_aktywow
-#                   new_add.kapital_wlasny = kapital_wlasny
-#                   new_add.kapital_podstawowy = kapital_podstawowy
-#                   new_add.rezerwy_rozliczenia_miedzyokresowe = rezerwy_rozliczenia_miedzyokresowe
-#                   new_add.zobowiazania_dlugoterminowe = zobowiazania_dlugoterminowe
-#                   new_add.dl_zobowiazania_finansowe = dl_zobowiazania_finansowe
-#                   new_add.zobowiazania_krotkoterminowe = zobowiazania_krotkoterminowe
-#                   new_add.kr_zobowiazania_finansowe = kr_zobowiazania_finansowe
-#                   new_add.suma_pasywow = suma_pasywow
-#                   new_add.przychody = przychody
-#                   new_add.zysk_strata_dzialalnosc_operacyjna = zysk_strata_dzialalnosc_operacyjna
-#                   new_add.amortyzacja = amortyzacja
-#                   new_add.zysk_strata_brutto = zysk_strata_brutto
-#                   new_add.podatek_dochodowy = podatek_dochodowy
-#                   new_add.zysk_strata_netto = zysk_strata_netto
-#                   new_add.capitalization = kapitalizacja
-#                   new_add.current_ratio = plynnosc
-#                   new_add.debt_ratio = zobowiazania
-#                   new_add.debt_to_equity_ratio = zobowiazania_kapitale
-#                   new_add.receivable_turnover_ratio = obrot_naleznosciami
-#                   new_add.operating_profit_margin = marza_operacyjna
-#                   new_add.net_profit_margin = marza_netto
-#                   new_add.net_financial_debt = zadl_finansowe_netto
-#                   new_add.EBITDA_12 = ebitda
-#                   new_add.author = request.user
-#                   new_add.save()
-#
-#                   deadline = datetime.today() + timedelta(days=180)
-#
-#                   new_task = Task()
-#                   new_task.author = request.user
-#                   new_task.title = "Badanie kondycji"
-#                   new_task.deadline = deadline
-#                   new_task.company = company
-#                   new_task.save()
-#
-#                   return redirect('show', result_id=new_add.id)
-#
-#               else:
-#                   add_category = Category()
-#                   add_category.id = 3
-#                   add_category.rating_name = 3
-#                   add_category.save()
-#
-#                   new_add = CompanyRatios()
-#                   new_add.company = company
-#                   new_add.category = add_category
-#                   new_add.year_name = wartrosc_rok
-#                   new_add.aktywa_trwale = aktywa_trwale
-#                   new_add.aktywa_obrotowe = aktywa_obrotowe
-#                   new_add.zapasy = zapasy
-#                   new_add.naleznosci_krotkoterminowe = naleznosci_krotkoterminowe
-#                   new_add.naleznosci_dostaw_uslug = naleznosci_dostaw_uslug
-#                   new_add.naleznosci_podatkowe = naleznosci_podatkowe
-#                   new_add.inwestycje_krotkoterminowe = inwestycje_krotkoterminowe
-#                   new_add.srodki_pieniezne = srodki_pieniezne
-#                   new_add.suma_aktywow = suma_aktywow
-#                   new_add.kapital_wlasny = kapital_wlasny
-#                   new_add.kapital_podstawowy = kapital_podstawowy
-#                   new_add.rezerwy_rozliczenia_miedzyokresowe = rezerwy_rozliczenia_miedzyokresowe
-#                   new_add.zobowiazania_dlugoterminowe = zobowiazania_dlugoterminowe
-#                   new_add.dl_zobowiazania_finansowe = dl_zobowiazania_finansowe
-#                   new_add.zobowiazania_krotkoterminowe = zobowiazania_krotkoterminowe
-#                   new_add.kr_zobowiazania_finansowe = kr_zobowiazania_finansowe
-#                   new_add.suma_pasywow = suma_pasywow
-#                   new_add.przychody = przychody
-#                   new_add.zysk_strata_dzialalnosc_operacyjna = zysk_strata_dzialalnosc_operacyjna
-#                   new_add.amortyzacja = amortyzacja
-#                   new_add.zysk_strata_brutto = zysk_strata_brutto
-#                   new_add.podatek_dochodowy = podatek_dochodowy
-#                   new_add.zysk_strata_netto = zysk_strata_netto
-#                   new_add.capitalization = kapitalizacja
-#                   new_add.current_ratio = plynnosc
-#                   new_add.debt_ratio = zobowiazania
-#                   new_add.debt_to_equity_ratio = zobowiazania_kapitale
-#                   new_add.receivable_turnover_ratio = obrot_naleznosciami
-#                   new_add.operating_profit_margin = marza_operacyjna
-#                   new_add.net_profit_margin = marza_netto
-#                   new_add.net_financial_debt = zadl_finansowe_netto
-#                   new_add.EBITDA_12 = ebitda
-#                   new_add.author = request.user
-#                   new_add.save()
-#
-#                   deadline = datetime.today() + timedelta(days=180)
-#
-#                   new_task = Task()
-#                   new_task.author = request.user
-#                   new_task.title = "Badanie kondycji"
-#                   new_task.deadline = deadline
-#                   new_task.company = company
-#                   new_task.save()
-#
-#                   return redirect('show', result_id=new_add.id)
-#
-#           else:
-#               if kapitalizacja > 20 and plynnosc > 1 and zobowiazania_kapitale < 300:
-#                   category = "Niskie ryzyko niewypłacalności"
-#               elif kapitalizacja < 20 and plynnosc < 1 and zobowiazania_kapitale > 300 or zobowiazania_kapitale < 0:
-#                   category = "Wysokie ryzyko niewypłacalności"
-#               else:
-#                   category = "Umiarkowane ryzyko niewypłacalności, wymagana pogłębiona analiza"
-#
-#               return render(request, 'bezLogowaniaLink.html', locals())
-#
-#
-#
+class NewRatios(View):
+    """Iterator for analyzing the company's financial result of manually entered data."""
+    def get(self, request):
+        form = AddResultsForm()
+        return render(request, 'ratios_manual_add_form.html', {'form': form})
+
+    def post(self, request):
+        form = AddResultsForm(request.POST)
+        if form.is_valid():
+            company_name = form.cleaned_data.get('company_name')
+            number_nip = form.cleaned_data.get('number_NIP')
+            number_nip = int(number_nip)
+            year_result = form.cleaned_data.get('year_results')
+            assets_fixed = form.cleaned_data.get('assets_fixed')
+            assets_current = form.cleaned_data.get('assets_current')
+            stock = form.cleaned_data.get('stock')
+            receivables_short_term = form.cleaned_data.get('receivables_short_term')
+            receivables_trade = form.cleaned_data.get('receivables_trade')
+            receivables_tax = form.cleaned_data.get('receivables_tax')
+            investments_short_term = form.cleaned_data.get('investments_short_term')
+            assets_cash = form.cleaned_data.get('assets_cash')
+            capital_share = form.cleaned_data.get('capital_share')
+            provision_and_accruals = form.cleaned_data.get('provision_and_accruals')
+            liabilities_long_therm = form.cleaned_data.get('liabilities_long_therm')
+            liabilities_long_therm_financial = form.cleaned_data.get('liabilities_long_therm_financial')
+            liabilities_short_therm = form.cleaned_data.get('liabilities_short_therm')
+            liabilities_short_therm_financial = form.cleaned_data.get('liabilities_short_therm_financial')
+            liabilities_short_therm_trade = form.cleaned_data.get('liabilities_short_therm_trade')
+            revenue = form.cleaned_data.get('revenue')
+            profit_operating = form.cleaned_data.get('profit_operating')
+            depreciation = form.cleaned_data.get('depreciation')
+            profit_gross = form.cleaned_data.get('profit_gross')
+            tax_income = form.cleaned_data.get('tax_income')
+            assets_total = assets_fixed + assets_current
+            equity = assets_total - provision_and_accruals - liabilities_long_therm - liabilities_short_therm
+            liabilities_and_equity = liabilities_long_therm + provision_and_accruals + equity + liabilities_short_therm
+            profit_net = profit_gross - tax_income
+
+            capitalization = round(equity / liabilities_and_equity * 100, 1)
+            current_ratio = round(assets_current / liabilities_short_therm, 2)
+            debt_ratio = round(liabilities_short_therm + liabilities_long_therm + provision_and_accruals, 0)
+            debt_to_equity_ratio = round(debt_ratio / equity * 100, 1)
+            receivables_turnover_ratio = round(receivables_trade / revenue * 360 * 1, 0)
+            liabilities_turnover_ratio = round(liabilities_short_therm_trade / revenue * 360 * 1, 0)
+            profit_operating_margin = round(profit_operating / revenue * 100, 1)
+            profit_net_margin = round(profit_net / revenue * 100, 1)
+            debt_financial_net = round(liabilities_long_therm_financial + liabilities_short_therm_financial \
+                                       - assets_cash, 0)
+            ebitda = round(profit_operating + depreciation, 0)
+            debt_financial_net_to_ebitda = round(debt_financial_net/ebitda, 2)
+
+
+            user = request.user
+            if user.is_authenticated:
+                company, _ = Company.objects.get_or_create(
+                  number_NIP=number_nip,
+                  defaults={'company_name': company_name, 'author': request.user})
+                company.save()
+
+                if capitalization > 20 and current_ratio > 1 and debt_to_equity_ratio < 300:
+                    category = Category()
+                    category.id = 1
+                    category.rating_name = 1
+                    category.save()
+
+                    ratios = CompanyRatios()
+                    ratios.company_name = company
+                    ratios.category = category
+                    ratios.year_name = year_result
+                    ratios.assets_fixed = assets_fixed
+                    ratios.assets_current = assets_current
+                    ratios.stock = stock
+                    ratios.receivables_short_term = receivables_short_term
+                    ratios.receivables_trade = receivables_trade
+                    ratios.receivables_tax = receivables_tax
+                    ratios.investments_short_term = investments_short_term
+                    ratios.assets_cash = assets_cash
+                    ratios.assets_total = assets_total
+                    ratios.equity = equity
+                    ratios.capital_share = capital_share
+                    ratios.provision_and_accruals = provision_and_accruals
+                    ratios.liabilities_long_therm = liabilities_long_therm
+                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
+                    ratios.liabilities_short_therm = liabilities_short_therm
+                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_and_equity = liabilities_and_equity
+                    ratios.revenue = revenue
+                    ratios.profit_operating = profit_operating
+                    ratios.depreciation = depreciation
+                    ratios.profit_gross = profit_gross
+                    ratios.tax_income= tax_income
+                    ratios.profit_net = profit_net
+                    ratios.capitalization = capitalization
+                    ratios.current_ratio = current_ratio
+                    ratios.debt_ratio = debt_ratio
+                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
+                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
+                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
+                    ratios.profit_operating_margin = profit_operating_margin
+                    ratios.profit_net_margin = profit_net_margin
+                    ratios.debt_financial_net = debt_financial_net
+                    ratios.ebitda = ebitda
+                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
+                    ratios.author = request.user
+                    ratios.save()
+
+                    deadline = datetime.today() + timedelta(days=180)
+
+
+                    task = Task()
+                    task.author = request.user
+                    task.title = "Add new financial analysis"
+                    task.deadline = deadline
+                    task.company = company
+                    task.save()
+
+                    return redirect('show', result_id=ratios.id)
+
+                if capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
+                    category = Category()
+                    category.id = 2
+                    category.rating_name = 2
+                    category.save()
+
+                    ratios = CompanyRatios()
+                    ratios.company_name = company
+                    ratios.category = category
+                    ratios.year_name = year_result
+                    ratios.assets_fixed = assets_fixed
+                    ratios.assets_current = assets_current
+                    ratios.stock = stock
+                    ratios.receivables_short_term = receivables_short_term
+                    ratios.receivables_trade = receivables_trade
+                    ratios.receivables_tax = receivables_tax
+                    ratios.investments_short_term = investments_short_term
+                    ratios.assets_cash = assets_cash
+                    ratios.assets_total = assets_total
+                    ratios.equity = equity
+                    ratios.capital_share = capital_share
+                    ratios.provision_and_accruals = provision_and_accruals
+                    ratios.liabilities_long_therm = liabilities_long_therm
+                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
+                    ratios.liabilities_short_therm = liabilities_short_therm
+                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_and_equity = liabilities_and_equity
+                    ratios.revenue = revenue
+                    ratios.profit_operating = profit_operating
+                    ratios.depreciation = depreciation
+                    ratios.profit_gross = profit_gross
+                    ratios.tax_income = tax_income
+                    ratios.profit_net = profit_net
+                    ratios.capitalization = capitalization
+                    ratios.current_ratio = current_ratio
+                    ratios.debt_ratio = debt_ratio
+                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
+                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
+                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
+                    ratios.profit_operating_margin = profit_operating_margin
+                    ratios.profit_net_margin = profit_net_margin
+                    ratios.debt_financial_net = debt_financial_net
+                    ratios.ebitda = ebitda
+                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
+                    ratios.author = request.user
+                    ratios.save()
+
+                    deadline = datetime.today() + timedelta(days=180)
+
+                    task = Task()
+                    task.author = request.user
+                    task.title = "Add new financial analysis"
+                    task.deadline = deadline
+                    task.company = company
+                    task.save()
+
+                    return redirect('show', result_id=ratios.id)
+
+                else:
+                    category = Category()
+                    category.id = 3
+                    category.rating_name = 3
+                    category.save()
+
+                    ratios = CompanyRatios()
+                    ratios.company_name = company
+                    ratios.category = category
+                    ratios.year_name = year_result
+                    ratios.assets_fixed = assets_fixed
+                    ratios.assets_current = assets_current
+                    ratios.stock = stock
+                    ratios.receivables_short_term = receivables_short_term
+                    ratios.receivables_trade = receivables_trade
+                    ratios.receivables_tax = receivables_tax
+                    ratios.investments_short_term = investments_short_term
+                    ratios.assets_cash = assets_cash
+                    ratios.assets_total = assets_total
+                    ratios.equity = equity
+                    ratios.capital_share = capital_share
+                    ratios.provision_and_accruals = provision_and_accruals
+                    ratios.liabilities_long_therm = liabilities_long_therm
+                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
+                    ratios.liabilities_short_therm = liabilities_short_therm
+                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_and_equity = liabilities_and_equity
+                    ratios.revenue = revenue
+                    ratios.profit_operating = profit_operating
+                    ratios.depreciation = depreciation
+                    ratios.profit_gross = profit_gross
+                    ratios.tax_income = tax_income
+                    ratios.profit_net = profit_net
+                    ratios.capitalization = capitalization
+                    ratios.current_ratio = current_ratio
+                    ratios.debt_ratio = debt_ratio
+                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
+                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
+                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
+                    ratios.profit_operating_margin = profit_operating_margin
+                    ratios.profit_net_margin = profit_net_margin
+                    ratios.debt_financial_net = debt_financial_net
+                    ratios.ebitda = ebitda
+                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
+                    ratios.author = request.user
+                    ratios.save()
+
+                    deadline = datetime.today() + timedelta(days=180)
+
+                    task = Task()
+                    task.author = request.user
+                    task.title = "Add new financial analysis"
+                    task.deadline = deadline
+                    task.company = company
+                    task.save()
+
+                    return redirect('show', result_id=ratios.id)
+
+            else:
+                if capitalization > 20 and current_ratio > 1 and debt_to_equity_ratio < 300:
+                    category = "Low risk"
+                elif capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
+                    category = "High risk"
+                else:
+                    category = "Medium risk"
+
+                return render(request, 'ratios_view.html', locals())
+
+
+def convert_to_float(root, value):
+    element = root.find(value)
+    if element:
+        element_value = element.find('.//{*}KwotaA').text
+        element_value = round(float(element_value)/1000, 2)
+    else:
+        element_value = 0.00
+    return element_value
+
+
+def give_depreciation(root, value_first, value_second):
+    depreciation = root.find(value_first)
+    if depreciation:
+        depreciation = depreciation.find('.//{*}KwotaA').text
+        depreciation = round(float(depreciation) / 1000, 2)
+    else:
+        depreciation = root.find(value_second)
+        depreciation = depreciation.find('.//{*}KwotaA').text
+        depreciation = round(float(depreciation) / 1000, 2)
+    return depreciation
+
+
+
+class NewRatiosFile(View):
+    """Iterator to analyze the financial result of the company automatically entered data."""
+
+    def get(self, request):
+        form = AddFileForm()
+        return render(request, 'ratios_file_add.html', {'form': form})
+
+    def post(self, request):
+        form = AddFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            instance = Document(file_name=request.FILES['file_name'])
+            instance.save()
+
+            tree = ET.parse(instance.file_name)
+            root = tree.getroot()
+            ET.register_namespace("", "http://www.mf.gov.pl/schematy/SF/DefinicjeTypySprawozdaniaFinansowe/2018/07/09/JednostkaInnaWZlotych")
+
+            element_year = root.find('.//{*}Naglowek')
+            year = element_year.find('.//{*}OkresDo')
+            year_result = year.text
+            year_result = year_result[0:4]
+            year_result = int(year_result)
+
+            company_name = root.find('.//{*}NazwaFirmy')
+            company_name = company_name.text
+
+            number_nip = root.find('.//{*}P_1D')
+            number_nip = number_nip.text
+            number_nip = int(number_nip)
+
+            company_pkd = root.find('.//{*}KodPKD')
+            company_pkd = company_pkd.text
+
+            assets_fixed = './/{*}Aktywa_A'
+            assets_fixed = convert_to_float(root, assets_fixed)
+
+            assets_current = './/{*}Aktywa_B'
+            assets_current = convert_to_float(root, assets_current)
+
+            element_assets_current = root.find('.//{*}Aktywa_B')
+            stock = './/{*}Aktywa_B_I'
+            stock = convert_to_float(element_assets_current, stock)
+
+            receivables_short_term = './/{*}Aktywa_B_II'
+            receivables_short_term = convert_to_float(root, receivables_short_term)
+
+            receivables_trade_related = './/{*}Aktywa_B_II_1_A'
+            receivables_trade_related = convert_to_float(root, receivables_trade_related)
+            receivables_trade_shares = './/{*}Aktywa_B_II_2_A'
+            receivables_trade_shares = convert_to_float(root, receivables_trade_shares)
+            receivables_trade_other = './/{*}Aktywa_B_II_3_A'
+            receivables_trade_other = convert_to_float(root, receivables_trade_other)
+            receivables_trade = receivables_trade_related + receivables_trade_shares + receivables_trade_other
+
+            receivables_tax = './/{*}Aktywa_B_II_3_B'
+            receivables_tax = convert_to_float(root, receivables_tax)
+
+            investments_short_term = './/{*}Aktywa_B_III'
+            investments_short_term = convert_to_float(root, investments_short_term)
+
+            assets_cash = './/{*}Aktywa_B_III_1_C'
+            assets_cash = convert_to_float(root, assets_cash)
+
+            equity = './/{*}Pasywa_A'
+            equity = convert_to_float(root, equity)
+
+            capital_share = './/{*}Pasywa_A_I'
+            capital_share = convert_to_float(root, capital_share)
+
+            provision = './/{*}Pasywa_B_I'
+            provision = convert_to_float(root, provision)
+            accruals = './/{*}Pasywa_B_IV'
+            accruals = convert_to_float(root, accruals)
+            provision_and_accruals = round(provision + accruals, 2)
+
+            liabilities_long_therm = './/{*}Pasywa_B_II'
+            liabilities_long_therm = convert_to_float(root, liabilities_long_therm)
+
+            liabilities_long_therm_credits = './/{*}Pasywa_B_II_3_A'
+            liabilities_long_therm_credits = convert_to_float(root, liabilities_long_therm_credits)
+            liabilities_long_therm_other_financial = './/{*}Pasywa_B_II_3_C'
+            liabilities_long_therm_other_financial = convert_to_float(root, liabilities_long_therm_other_financial)
+
+            liabilities_long_therm_financial = liabilities_long_therm_credits + liabilities_long_therm_other_financial
+
+            liabilities_short_therm = './/{*}Pasywa_B_III'
+            liabilities_short_therm = convert_to_float(root, liabilities_short_therm)
+
+            liabilities_short_therm_credits = './/{*}Pasywa_B_III_3_A'
+            liabilities_short_therm_credits = convert_to_float(root, liabilities_short_therm_credits)
+            liabilities_short_therm_other_financial = './/{*}Pasywa_B_III_3_C'
+            liabilities_short_therm_other_financial = convert_to_float(root, liabilities_short_therm_other_financial)
+            liabilities_short_therm_financial = liabilities_short_therm_credits+ liabilities_short_therm_other_financial
+
+            liabilities_short_therm_trade_related = './/{*}Pasywa_B_III_1_A'
+            liabilities_short_therm_trade_related = convert_to_float(root, liabilities_short_therm_trade_related)
+            liabilities_short_therm_trade_shares = './/{*}Pasywa_B_III_2_A'
+            liabilities_short_therm_trade_shares = convert_to_float(root, liabilities_short_therm_trade_shares)
+            liabilities_short_therm_trade_other = './/{*}Pasywa_B_III_3_D_1'
+            liabilities_short_therm_trade_other = convert_to_float(root, liabilities_short_therm_trade_other)
+            liabilities_short_therm_trade = liabilities_short_therm_trade_related + liabilities_short_therm_trade_shares\
+                                            + liabilities_short_therm_trade_other
+
+            revenue = './/{*}A'
+            revenue = convert_to_float(root, revenue)
+
+            profit_operating = './/{*}F'
+            profit_operating = convert_to_float(root, profit_operating)
+
+            depreciation = give_depreciation(root, './/{*}B_I', './/{*}A_II_1')
+
+            profit_gross = './/{*}I'
+            profit_gross = convert_to_float(root, profit_gross)
+
+            tax_income = './/{*}J'
+            tax_income = convert_to_float(root, tax_income)
+
+            profit_net = './/{*}L'
+            profit_net = convert_to_float(root, profit_net)
+
+            assets_total = './/{*}Aktywa'
+            assets_total = convert_to_float(root, assets_total)
+
+            liabilities_and_equity = './/{*}Pasywa'
+            liabilities_and_equity = convert_to_float(root, liabilities_and_equity)
+
+            capitalization = round(equity / liabilities_and_equity * 100, 1)
+            current_ratio = round(assets_current / liabilities_short_therm, 2)
+            debt_ratio = round(liabilities_short_therm + liabilities_long_therm + provision_and_accruals, 0)
+            debt_to_equity_ratio = round(debt_ratio / equity * 100, 1)
+            receivables_turnover_ratio = round(receivables_trade / revenue * 360 * 1, 0)
+            liabilities_turnover_ratio = round(liabilities_short_therm_trade / revenue * 360 * 1, 0)
+            profit_operating_margin = round(profit_operating / revenue * 100, 1)
+            profit_net_margin = round(profit_net / revenue * 100, 1)
+            debt_financial_net = round(liabilities_long_therm_financial + liabilities_short_therm_financial \
+                                   - assets_cash, 0)
+            ebitda = round(profit_operating + depreciation, 0)
+            debt_financial_net_to_ebitda = round(debt_financial_net / ebitda, 2)
+
+
+            user = request.user
+            if user.is_authenticated:
+                trade, _ = Trade.objects.get_or_create(trade_name=company_pkd)
+                trade.save()
+
+                company, _ = Company.objects.get_or_create(
+                    number_NIP=number_nip,
+                    defaults={'company_name': company_name, 'author': request.user, 'trade': trade})
+                company.save()
+
+
+                if capitalization > 20 and current_ratio > 1 and debt_to_equity_ratio < 300:
+                    category = Category()
+                    category.id = 1
+                    category.rating_name = 1
+                    category.save()
+
+                    ratios = CompanyRatios()
+                    ratios.company_name = company
+                    ratios.category = category
+                    ratios.year_name = year_result
+                    ratios.assets_fixed = assets_fixed
+                    ratios.assets_current = assets_current
+                    ratios.stock = stock
+                    ratios.receivables_short_term = receivables_short_term
+                    ratios.receivables_trade = receivables_trade
+                    ratios.receivables_tax = receivables_tax
+                    ratios.investments_short_term = investments_short_term
+                    ratios.assets_cash = assets_cash
+                    ratios.assets_total = assets_total
+                    ratios.equity = equity
+                    ratios.capital_share = capital_share
+                    ratios.provision_and_accruals = provision_and_accruals
+                    ratios.liabilities_long_therm = liabilities_long_therm
+                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
+                    ratios.liabilities_short_therm = liabilities_short_therm
+                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_and_equity = liabilities_and_equity
+                    ratios.revenue = revenue
+                    ratios.profit_operating = profit_operating
+                    ratios.depreciation = depreciation
+                    ratios.profit_gross = profit_gross
+                    ratios.tax_income = tax_income
+                    ratios.profit_net = profit_net
+                    ratios.capitalization = capitalization
+                    ratios.current_ratio = current_ratio
+                    ratios.debt_ratio = debt_ratio
+                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
+                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
+                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
+                    ratios.profit_operating_margin = profit_operating_margin
+                    ratios.profit_net_margin = profit_net_margin
+                    ratios.debt_financial_net = debt_financial_net
+                    ratios.ebitda = ebitda
+                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
+                    ratios.author = request.user
+                    ratios.save()
+
+                    deadline = datetime.today() + timedelta(days=180)
+
+                    task = Task()
+                    task.author = request.user
+                    task.title = "Add new financial analysis"
+                    task.deadline = deadline
+                    task.company = company
+                    task.save()
+
+                    return redirect('show', result_id=ratios.id)
+
+                if capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
+                    category = Category()
+                    category.id = 2
+                    category.rating_name = 2
+                    category.save()
+
+                    ratios = CompanyRatios()
+                    ratios.company_name = company
+                    ratios.category = category
+                    ratios.year_name = year_result
+                    ratios.assets_fixed = assets_fixed
+                    ratios.assets_current = assets_current
+                    ratios.stock = stock
+                    ratios.receivables_short_term = receivables_short_term
+                    ratios.receivables_trade = receivables_trade
+                    ratios.receivables_tax = receivables_tax
+                    ratios.investments_short_term = investments_short_term
+                    ratios.assets_cash = assets_cash
+                    ratios.assets_total = assets_total
+                    ratios.equity = equity
+                    ratios.capital_share = capital_share
+                    ratios.provision_and_accruals = provision_and_accruals
+                    ratios.liabilities_long_therm = liabilities_long_therm
+                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
+                    ratios.liabilities_short_therm = liabilities_short_therm
+                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_and_equity = liabilities_and_equity
+                    ratios.revenue = revenue
+                    ratios.profit_operating = profit_operating
+                    ratios.depreciation = depreciation
+                    ratios.profit_gross = profit_gross
+                    ratios.tax_income = tax_income
+                    ratios.profit_net = profit_net
+                    ratios.capitalization = capitalization
+                    ratios.current_ratio = current_ratio
+                    ratios.debt_ratio = debt_ratio
+                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
+                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
+                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
+                    ratios.profit_operating_margin = profit_operating_margin
+                    ratios.profit_net_margin = profit_net_margin
+                    ratios.debt_financial_net = debt_financial_net
+                    ratios.ebitda = ebitda
+                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
+                    ratios.author = request.user
+                    ratios.save()
+
+                    deadline = datetime.today() + timedelta(days=180)
+
+                    task = Task()
+                    task.author = request.user
+                    task.title = "Add new financial analysis"
+                    task.deadline = deadline
+                    task.company = company
+                    task.save()
+
+                    return redirect('show', result_id=ratios.id)
+
+                else:
+                    category = Category()
+                    category.id = 3
+                    category.rating_name = 3
+                    category.save()
+
+                    ratios = CompanyRatios()
+                    ratios.company_name = company
+                    ratios.category = category
+                    ratios.year_name = year_result
+                    ratios.assets_fixed = assets_fixed
+                    ratios.assets_current = assets_current
+                    ratios.stock = stock
+                    ratios.receivables_short_term = receivables_short_term
+                    ratios.receivables_trade = receivables_trade
+                    ratios.receivables_tax = receivables_tax
+                    ratios.investments_short_term = investments_short_term
+                    ratios.assets_cash = assets_cash
+                    ratios.assets_total = assets_total
+                    ratios.equity = equity
+                    ratios.capital_share = capital_share
+                    ratios.provision_and_accruals = provision_and_accruals
+                    ratios.liabilities_long_therm = liabilities_long_therm
+                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
+                    ratios.liabilities_short_therm = liabilities_short_therm
+                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_and_equity = liabilities_and_equity
+                    ratios.revenue = revenue
+                    ratios.profit_operating = profit_operating
+                    ratios.depreciation = depreciation
+                    ratios.profit_gross = profit_gross
+                    ratios.tax_income = tax_income
+                    ratios.profit_net = profit_net
+                    ratios.capitalization = capitalization
+                    ratios.current_ratio = current_ratio
+                    ratios.debt_ratio = debt_ratio
+                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
+                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
+                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
+                    ratios.profit_operating_margin = profit_operating_margin
+                    ratios.profit_net_margin = profit_net_margin
+                    ratios.debt_financial_net = debt_financial_net
+                    ratios.ebitda = ebitda
+                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
+                    ratios.author = request.user
+                    ratios.save()
+
+                    deadline = datetime.today() + timedelta(days=180)
+
+                    task = Task()
+                    task.author = request.user
+                    task.title = "Add new financial analysis"
+                    task.deadline = deadline
+                    task.company = company
+                    task.save()
+
+                    return redirect('show', result_id=ratios.id)
+
+            else:
+                if capitalization > 20 and current_ratio > 1 and debt_to_equity_ratio < 300:
+                    category = "Low risk"
+                elif capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
+                    category = "High risk"
+                else:
+                    category = "Medium risk"
+
+                return render(request, 'ratios_view.html', locals())
+
+        return redirect('index')
+
+
+#
+# #
 # class ViewRatios(View):
 #   def get(self, request, result_id):
 #       results = get_object_or_404(CompanyRatios, pk=result_id)

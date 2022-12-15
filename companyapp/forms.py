@@ -1,59 +1,58 @@
-from calendar import calendar
-from datetime import datetime
+# from calendar import calendar
+# from datetime import datetime
 
-# from django import forms
-# from django.contrib.admin.widgets import AdminDateWidget
-# from django.core.exceptions import ValidationError
-# from django.forms import ModelForm
-# from .models import Company, CompanyRatios, Task, Trade
-#
-#
-# class AddLinkForm(forms.Form):
-#    docfile = forms.FileField()
-#
-#
-# class AddResultsForm(forms.Form):
-#
-#    company = forms.CharField(max_length=255)
-#    number_NIP = forms.IntegerField()
-#    year_results = forms.IntegerField()
-#    # dodaj walidacje
-#
-#    aktywa_trwałe = forms.FloatField()
-#    aktywa_obrotowe= forms.FloatField()
-#    zapasy = forms.FloatField()
-#    nalez_krotkoterminowe = forms.FloatField()
-#    nalez_dost_uslug = forms.FloatField()
-#    nalez_podatkowe = forms.FloatField()
-#    inwest_krotkoterminowe = forms.FloatField()
-#    pap_wartosciowe = forms.FloatField()
-#    srodki_pieniez = forms.FloatField()
-#    kap_podstawowy = forms.FloatField()
-#    rez_rozli_okres = forms.FloatField()
-#    zob_dlugo = forms.FloatField()
-#    zob_dlugo_finansowe = forms.FloatField()
-#    zob_krotko = forms.FloatField()
-#    zob_krotko_finansowe = forms.FloatField()
-#    przychody = forms.FloatField()
-#    dzial_operacyjny = forms.FloatField()
-#    amortyzacja = forms.FloatField()
-#    brutto = forms.FloatField()
-#    podatek = forms.FloatField()
-#
-# def validate_nip(nip_int):
-#    nip_str = str(nip_int)
-#    nip_str.replace('-', '')
-#    if len(nip_str) != 10 or not nip_str.isdigit():
-#        raise ValidationError("Check you NIP")
-#
-#    digits = [int(i) for i in nip_str]
-#    weights = (6, 5, 7, 2, 3, 4, 5, 6, 7)
-#    check_sum = sum(d * w for d, w in zip(digits, weights)) % 11
-#    if check_sum == digits[9]:
-#        return digits
-#
-#
-# class CompanyForm(forms.Form):
+from django import forms
+from django.contrib.admin.widgets import AdminDateWidget
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm
+from .models import Company, CompanyRatios, Task, Trade
+
+
+class AddFileForm(forms.Form):
+   file_name = forms.FileField()
+
+
+class AddResultsForm(forms.Form):
+    company_name = forms.CharField(max_length=255)
+    number_NIP = forms.IntegerField()
+    year_results = forms.IntegerField()
+    assets_fixed = forms.FloatField()
+    assets_current = forms.FloatField()
+    stock = forms.FloatField()
+    receivables_short_term = forms.FloatField()
+    receivables_trade = forms.FloatField()
+    receivables_tax = forms.FloatField()
+    investments_short_term = forms.FloatField()
+    assets_cash = forms.FloatField()
+    capital_share = forms.FloatField()
+    provision_and_accruals = forms.FloatField()
+    liabilities_long_therm = forms.FloatField()
+    liabilities_long_therm_financial = forms.FloatField()
+    liabilities_short_therm = forms.FloatField()
+    liabilities_short_therm_financial = forms.FloatField()
+    liabilities_short_therm_trade = forms.FloatField()
+    revenue = forms.FloatField()
+    profit_operating = forms.FloatField()
+    depreciation = forms.FloatField()
+    profit_gross = forms.FloatField()
+    tax_income = forms.FloatField()
+
+
+def validate_nip(nip_int):
+   nip_str = str(nip_int)
+   nip_str.replace('-', '')
+   if len(nip_str) != 10 or not nip_str.isdigit():
+       raise ValidationError("Check you NIP")
+
+   digits = [int(i) for i in nip_str]
+   weights = (6, 5, 7, 2, 3, 4, 5, 6, 7)
+   check_sum = sum(d * w for d, w in zip(digits, weights)) % 11
+   if check_sum == digits[9]:
+       return digits
+
+
+class CompanyForm(forms.Form):
+    pass
 #    name = forms.CharField(max_length=255)
 #    numberNip = forms.IntegerField(validators=[validate_nip])
 #    active = forms.BooleanField()
@@ -61,21 +60,25 @@ from datetime import datetime
 #
 #
 #
-# class TradeForm(forms.Form):
+class TradeForm(forms.Form):
+    pass
 #    trade_name = forms.CharField(max_length=64, label='nr PKD')
 #    description = forms.Textarea()
 #
 #
-# class ResultForm(ModelForm):
+class ResultForm(ModelForm):
+    pass
 #    class Meta:
 #        model = CompanyRatios
 #        fields = ['dl_zobowiazania_finansowe', 'kr_zobowiazania_finansowe']
 #
-# class LoginFormP(forms.Form):
+class LoginFormP(forms.Form):
+    pass
 #    login = forms.CharField(max_length=64)
 #    password = forms.CharField(widget=forms.PasswordInput)
 #
-# class AddUserForm(forms.Form):
+class AddUserForm(forms.Form):
+    pass
 #    login = forms.CharField(max_length=100)
 #    password = forms.CharField(label='Hasło', max_length=100, widget=forms.PasswordInput)
 #    password_repeat = forms.CharField(label='Powtórzone hasło', max_length=100, widget=forms.PasswordInput)
@@ -83,21 +86,25 @@ from datetime import datetime
 #    last_name = forms.CharField(label='Nazwisko', max_length=100)
 #    mail = forms.EmailField(max_length=100)
 #
-# class ChangePasswordForm(forms.Form):
+class ChangePasswordForm(forms.Form):
+    pass
 #    password = forms.CharField(label='Hasło', max_length=100, widget=forms.PasswordInput)
 #    repeat_password = forms.CharField(label='Powtórzone hasło', max_length=100, widget=forms.PasswordInput)
 #
-# class TaskForm(forms.Form):
+class TaskForm(forms.Form):
+    pass
 #    title = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Add new'}))
 #    deadline = forms.DateField(widget=forms.SelectDateWidget)
 #    company = forms.ModelChoiceField(queryset=Company.objects.all())
 #    description = forms.Textarea()
 #
 #
-# class TaskEditForm(forms.Form):
+class TaskEditForm(forms.Form):
+    pass
 #    title = forms.CharField(widget=forms.TextInput())
 #    deadline = forms.DateField(widget=forms.SelectDateWidget)
 #    description = forms.CharField(widget=forms.Textarea())
 #
-# class SearchForm(forms.Form):
+class SearchForm(forms.Form):
+    pass
 #    name = forms.CharField(label="Wyszukiwane po PKD", max_length=64, required=True)
