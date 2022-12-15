@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from .forms import AddResultsForm, CompanyForm, AddFileForm, LoginForm, AddUserForm, ChangePasswordForm, TradeForm, \
-   SearchForm, TaskForm, ResultForm, TaskEditForm
-from django.http import HttpResponse
+from .forms import CompanyForm, AddFileForm, LoginForm, AddUserForm, ChangePasswordForm, TradeForm, \
+    SearchForm, TaskForm, ResultForm, TaskEditForm, RatiosAddForm
+
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
 from .models import Company, CompanyRatios, Category, Document, Trade, Task
@@ -177,7 +177,7 @@ class CompanyView(View):
     def get(self, request):
         company_all = Company.objects.filter(author=request.user)
 
-        return render(request, 'company.html', {'company_all': company_all})
+        return render(request, 'accounts.html', {'company_all': company_all})
 
 class CompanyDetail(LoginRequiredMixin,View):
     """The ability to view a detail company from user database"""
@@ -281,11 +281,11 @@ class TradeSearchCompany(LoginRequiredMixin,View):
 class RatiosAdd(View):
     """Iterator for analyzing the company's financial result of manually entered data."""
     def get(self, request):
-        form = AddResultsForm()
+        form = RatiosAddForm()
         return render(request, 'ratios_manual_add_form.html', {'form': form})
 
     def post(self, request):
-        form = AddResultsForm(request.POST)
+        form = RatiosAddForm(request.POST)
         if form.is_valid():
             company_name = form.cleaned_data.get('company_name')
             number_nip = form.cleaned_data.get('number_NIP')
@@ -344,7 +344,7 @@ class RatiosAdd(View):
                     category.save()
 
                     ratios = CompanyRatios()
-                    ratios.company_name = company
+                    ratios.company = company
                     ratios.category = category
                     ratios.year_name = year_result
                     ratios.assets_fixed = assets_fixed
@@ -368,7 +368,7 @@ class RatiosAdd(View):
                     ratios.profit_operating = profit_operating
                     ratios.depreciation = depreciation
                     ratios.profit_gross = profit_gross
-                    ratios.tax_income= tax_income
+                    ratios.tax_income = tax_income
                     ratios.profit_net = profit_net
                     ratios.capitalization = capitalization
                     ratios.current_ratio = current_ratio
@@ -394,7 +394,7 @@ class RatiosAdd(View):
                     task.company = company
                     task.save()
 
-                    return redirect('show', result_id=ratios.id)
+                    return redirect('ratios_detail', ratios_id=ratios.id)
 
                 if capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
                     category = Category()
@@ -403,7 +403,7 @@ class RatiosAdd(View):
                     category.save()
 
                     ratios = CompanyRatios()
-                    ratios.company_name = company
+                    ratios.company = company
                     ratios.category = category
                     ratios.year_name = year_result
                     ratios.assets_fixed = assets_fixed
@@ -452,7 +452,7 @@ class RatiosAdd(View):
                     task.company = company
                     task.save()
 
-                    return redirect('show', result_id=ratios.id)
+                    return redirect('ratios_detail', ratios_id=ratios.id)
 
                 else:
                     category = Category()
@@ -461,7 +461,7 @@ class RatiosAdd(View):
                     category.save()
 
                     ratios = CompanyRatios()
-                    ratios.company_name = company
+                    ratios.company = company
                     ratios.category = category
                     ratios.year_name = year_result
                     ratios.assets_fixed = assets_fixed
@@ -510,7 +510,7 @@ class RatiosAdd(View):
                     task.company = company
                     task.save()
 
-                    return redirect('show', result_id=ratios.id)
+                    return redirect('ratios_detail', ratios_id=ratios.id)
 
             else:
                 if capitalization > 20 and current_ratio > 1 and debt_to_equity_ratio < 300:
@@ -546,7 +546,7 @@ def give_depreciation(root, value_first, value_second):
 
 
 
-class NewRatiosFile(View):
+class RatiosAddFile(View):
     """Iterator to analyze the financial result of the company automatically entered data."""
 
     def get(self, request):
@@ -704,7 +704,7 @@ class NewRatiosFile(View):
                     category.save()
 
                     ratios = CompanyRatios()
-                    ratios.company_name = company
+                    ratios.company = company
                     ratios.category = category
                     ratios.year_name = year_result
                     ratios.assets_fixed = assets_fixed
@@ -753,7 +753,7 @@ class NewRatiosFile(View):
                     task.company = company
                     task.save()
 
-                    return redirect('show', result_id=ratios.id)
+                    return redirect('ratios_detail', ratios_id=ratios.id)
 
                 if capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
                     category = Category()
@@ -762,7 +762,7 @@ class NewRatiosFile(View):
                     category.save()
 
                     ratios = CompanyRatios()
-                    ratios.company_name = company
+                    ratios.company = company
                     ratios.category = category
                     ratios.year_name = year_result
                     ratios.assets_fixed = assets_fixed
@@ -811,7 +811,7 @@ class NewRatiosFile(View):
                     task.company = company
                     task.save()
 
-                    return redirect('show', result_id=ratios.id)
+                    return redirect('ratios_detail', ratios_id=ratios.id)
 
                 else:
                     category = Category()
@@ -820,7 +820,7 @@ class NewRatiosFile(View):
                     category.save()
 
                     ratios = CompanyRatios()
-                    ratios.company_name = company
+                    ratios.company = company
                     ratios.category = category
                     ratios.year_name = year_result
                     ratios.assets_fixed = assets_fixed
@@ -869,7 +869,7 @@ class NewRatiosFile(View):
                     task.company = company
                     task.save()
 
-                    return redirect('show', result_id=ratios.id)
+                    return redirect('ratios_detail', ratios_id=ratios.id)
 
             else:
                 if capitalization > 20 and current_ratio > 1 and debt_to_equity_ratio < 300:
@@ -884,47 +884,44 @@ class NewRatiosFile(View):
         return redirect('index')
 
 
-#
-# #
-# class ViewRatios(View):
-#   def get(self, request, result_id):
-#       results = get_object_or_404(CompanyRatios, pk=result_id)
-#       return render(request, 'show_result.html', {'results': [results]})
-#
-#
-# class EditRatios(LoginRequiredMixin,View):
-#
-#   def get(self, request, result_id):
-#       results = get_object_or_404(CompanyRatios, pk=result_id)
-#       form = ResultForm(initial={'dl_zobowiazania_finansowe': results.dl_zobowiazania_finansowe, 'kr_zobowiazania_finansowe': results.kr_zobowiazania_finansowe})
-#       return render(request, 'add_form.html', {'form': form})
-#
-#   def post(self, request, result_id):
-#       results = get_object_or_404(CompanyRatios, pk=result_id)
-#       form = ResultForm(request.POST)
-#       if form.is_valid():
-#
-#           edit_result, _ = CompanyRatios.objects.update_or_create(pk=result_id)
-#           edit_result.dl_zobowiazania_finansowe = form.cleaned_data.get('dl_zobowiazania_finansowe')
-#           edit_result.kr_zobowiazania_finansowe = form.cleaned_data.get('kr_zobowiazania_finansowe')
-#           edit_result.save()
-#
-#           return redirect('show', result_id=edit_result.id)
-#       return redirect('accounts')
-#
-# class DeleteRatios(LoginRequiredMixin, View):
-#
-#   def get(self, request, result_id):
-#       results = get_object_or_404(CompanyRatios, pk=result_id)
-#       return render(request, 'delete_company.html', {'company': results})
-#
-#   def post(self, request, result_id):
-#       results = get_object_or_404(CompanyRatios, pk=result_id)
-#       results.delete()
-#       return redirect('accounts')
-#
-#
-#
+class RatiosDetail(View):
+    def get(self, request, ratios_id):
+        ratios = get_object_or_404(CompanyRatios, pk=ratios_id)
+        return render(request, 'ratios_view.html', {'results': [ratios]})
+
+
+class RatiosEdit(LoginRequiredMixin,View):
+
+    def get(self, request, ratios_id):
+        results = get_object_or_404(CompanyRatios, pk=ratios_id)
+        form = ResultForm(initial={'liabilities_long_therm_financial': results.liabilities_long_therm_financial, 'liabilities_short_therm_financial': results.liabilities_short_therm_financial})
+        return render(request, 'base_form.html', {'form': form})
+
+    def post(self, request, ratios_id):
+        results = get_object_or_404(CompanyRatios, pk=ratios_id)
+        form = ResultForm(request.POST)
+        if form.is_valid():
+            ratios, _ = CompanyRatios.objects.update_or_create(pk=ratios_id)
+            ratios.liabilities_long_therm_financial = form.cleaned_data.get('liabilities_long_therm_financial')
+            ratios.liabilities_short_therm_financial = form.cleaned_data.get('liabilities_short_therm_financial')
+            ratios.save()
+
+            return redirect('ratios_detail', ratios_id=ratios.id)
+        return redirect('accounts')
+
+class RatiosDelete(LoginRequiredMixin, View):
+
+    def get(self, request, ratios_id):
+        results = get_object_or_404(CompanyRatios, pk=ratios_id)
+        return render(request, 'delete_form.html', {'form': results})
+
+    def post(self, request, ratios_id):
+        ratios = get_object_or_404(CompanyRatios, pk=ratios_id)
+        ratios.delete()
+        return redirect('accounts')
+
+
+
 class TaskAdd(LoginRequiredMixin, View):
   def get(self, request):
       form = TaskForm()
