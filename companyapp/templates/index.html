@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Zbadaj firme | Zaloguj się</title>
+<!--    <link rel="stylesheet" href="">-->
+   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+   <nav>
+       <ul>
+           <li><a href="#">O nas</a> </li>
+           <li><a href="#">Kontakt</a> </li>
+           <li><a href="#">Strefa wiedzy</a> </li>
+           <li><a href="{% url 'accounts' %}">Moje konto</a> </li>
+       </ul>
+   </nav>
+   <aside>
+       <img id="banner" src="static/pictures/baner.jpg"  height="500" width="600">
+   </aside>
+   <section>
+       <article>
+           <div class="kolumna">
+               <h2>Witaj na stronie analizy wskaźników finansowych </h2>
+               <p>Analiza finansowa firmy jest częścią analizy ekonomicznej, zapewnia ona wiele cennych informacji
+                   w zakresie danego przedsiębiorstwa. Stanowi obserwację poszczególnych obszarów finansów,
+                   oraz wyciągnięcie wniosków na temat aktualnej kondycji firmy. <a href="#">View more...</a><br><br>
+                   Nasza strona umożliwia przeprowadzenie badania w oparciu o dane finansowe wprowadzone ręcznie,
+                   bądź za pomocą pliku w formacie xml.
+                   Zachęcamy również do skorzystania z pełnego dostępu do aplikacji przy pomocy logowania.
+                   Aplikacja daje możliwość gromadzenia wykonanych raportów finansowych, pełnej ewidencji
+                   przeprowadzonych transakcji gospodarczych oraz wiele narzędzi wspomagających codzienna prace.
+               </p>
+                <h1><a href="{% url 'add_results' %}">Przejdz do ręcznej analizy</a></h1>
+
+                <h1><a href="{% url 'add_link' %}">Bądź wprowadź plik tutaj</a></h1>
+               </div>
+       </article>
+   </section>
+</body>
+</html>
