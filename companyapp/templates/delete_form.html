@@ -3,13 +3,24 @@
 {% block title %} {% endblock %}
 {% block content %}
 
-<h3 class="card-title">Do you really want to delete "{{ form }}"</h3>
-   <form method="post">
-       {% csrf_token %}
-       <button type="submit" class="btn btn-danger">Delete</button>
-   </form>
-   <br>
-   <br>
-   <a href="{% url 'accounts' %}">Back</a>
+{% if request.user.is_authenticated %}
+    <h3 class="card-title">Do you really want to delete "{{ form.company.company_name }}"</h3>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        <br>
+        <br>
+        <a href="{% url 'accounts' %}">Back</a>
+{% else %}
+    <h3 class="card-title">Do you really want to delete "{{ form }}"</h3>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        <br>
+        <br>
+        <a href="{% url 'accounts' %}">Back</a>
 
+{% endif %}
 {% endblock %}

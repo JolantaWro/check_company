@@ -124,7 +124,7 @@ class IndexView(View):
 #
 #
 class MyAccount(View):
-    """View for the logged in user and displays his information"""
+    """View for the logged-in user and displays his information"""
 
     def get(self, request):
         user = request.user
@@ -143,7 +143,7 @@ class MyAccount(View):
             return render(request, 'accounts.html', context={'message': message})
 
 
-class CompanyAdd(LoginRequiredMixin,View):
+class CompanyAdd(LoginRequiredMixin, View):
     """The ability to add a company to the database"""
 
     def get(self, request):
@@ -179,7 +179,7 @@ class CompanyView(View):
 
         return render(request, 'accounts.html', {'company_all': company_all})
 
-class CompanyDetail(LoginRequiredMixin,View):
+class CompanyDetail(LoginRequiredMixin, View):
     """The ability to view a detail company from user database"""
 
     def get(self, request, company_id):
@@ -196,7 +196,7 @@ class CompanyDetail(LoginRequiredMixin,View):
 
 
 
-class CompanyEdit(LoginRequiredMixin,View):
+class CompanyEdit(LoginRequiredMixin, View):
     """The ability to edit a detail company from user database"""
 
     def get(self, request, company_id):
@@ -238,7 +238,7 @@ class CompanyDelete(LoginRequiredMixin,View):
         return redirect('accounts')
 
 
-class TradeAdd(LoginRequiredMixin,View):
+class TradeAdd(LoginRequiredMixin, View):
     """Add Trade to user database"""
 
     def get(self, request):
@@ -305,7 +305,7 @@ class RatiosAdd(View):
             liabilities_long_therm_financial = form.cleaned_data.get('liabilities_long_therm_financial')
             liabilities_short_therm = form.cleaned_data.get('liabilities_short_therm')
             liabilities_short_therm_financial = form.cleaned_data.get('liabilities_short_therm_financial')
-            liabilities_short_therm_trade = form.cleaned_data.get('liabilities_short_therm_trade')
+            liabilities_trade = form.cleaned_data.get('liabilities_trade')
             revenue = form.cleaned_data.get('revenue')
             profit_operating = form.cleaned_data.get('profit_operating')
             depreciation = form.cleaned_data.get('depreciation')
@@ -321,7 +321,7 @@ class RatiosAdd(View):
             debt_ratio = round(liabilities_short_therm + liabilities_long_therm + provision_and_accruals, 0)
             debt_to_equity_ratio = round(debt_ratio / equity * 100, 1)
             receivables_turnover_ratio = round(receivables_trade / revenue * 360 * 1, 0)
-            liabilities_turnover_ratio = round(liabilities_short_therm_trade / revenue * 360 * 1, 0)
+            liabilities_turnover_ratio = round(liabilities_trade / revenue * 360 * 1, 0)
             profit_operating_margin = round(profit_operating / revenue * 100, 1)
             profit_net_margin = round(profit_net / revenue * 100, 1)
             debt_financial_net = round(liabilities_long_therm_financial + liabilities_short_therm_financial \
@@ -363,6 +363,7 @@ class RatiosAdd(View):
                     ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
                     ratios.liabilities_short_therm = liabilities_short_therm
                     ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_trade = liabilities_trade
                     ratios.liabilities_and_equity = liabilities_and_equity
                     ratios.revenue = revenue
                     ratios.profit_operating = profit_operating
@@ -422,6 +423,7 @@ class RatiosAdd(View):
                     ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
                     ratios.liabilities_short_therm = liabilities_short_therm
                     ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_trade = liabilities_trade
                     ratios.liabilities_and_equity = liabilities_and_equity
                     ratios.revenue = revenue
                     ratios.profit_operating = profit_operating
@@ -480,6 +482,7 @@ class RatiosAdd(View):
                     ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
                     ratios.liabilities_short_therm = liabilities_short_therm
                     ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_trade = liabilities_trade
                     ratios.liabilities_and_equity = liabilities_and_equity
                     ratios.revenue = revenue
                     ratios.profit_operating = profit_operating
@@ -520,7 +523,7 @@ class RatiosAdd(View):
                 else:
                     category = "Medium risk"
 
-                return render(request, 'ratios_view.html', locals())
+                return render(request, 'ratios_detail.html', locals())
 
 
 def convert_to_float(root, value):
@@ -646,7 +649,7 @@ class RatiosAddFile(View):
             liabilities_short_therm_trade_shares = convert_to_float(root, liabilities_short_therm_trade_shares)
             liabilities_short_therm_trade_other = './/{*}Pasywa_B_III_3_D_1'
             liabilities_short_therm_trade_other = convert_to_float(root, liabilities_short_therm_trade_other)
-            liabilities_short_therm_trade = liabilities_short_therm_trade_related + liabilities_short_therm_trade_shares\
+            liabilities_trade = liabilities_short_therm_trade_related + liabilities_short_therm_trade_shares\
                                             + liabilities_short_therm_trade_other
 
             revenue = './/{*}A'
@@ -677,7 +680,7 @@ class RatiosAddFile(View):
             debt_ratio = round(liabilities_short_therm + liabilities_long_therm + provision_and_accruals, 0)
             debt_to_equity_ratio = round(debt_ratio / equity * 100, 1)
             receivables_turnover_ratio = round(receivables_trade / revenue * 360 * 1, 0)
-            liabilities_turnover_ratio = round(liabilities_short_therm_trade / revenue * 360 * 1, 0)
+            liabilities_turnover_ratio = round(liabilities_trade / revenue * 360 * 1, 0)
             profit_operating_margin = round(profit_operating / revenue * 100, 1)
             profit_net_margin = round(profit_net / revenue * 100, 1)
             debt_financial_net = round(liabilities_long_therm_financial + liabilities_short_therm_financial \
@@ -723,6 +726,7 @@ class RatiosAddFile(View):
                     ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
                     ratios.liabilities_short_therm = liabilities_short_therm
                     ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_trade = liabilities_trade
                     ratios.liabilities_and_equity = liabilities_and_equity
                     ratios.revenue = revenue
                     ratios.profit_operating = profit_operating
@@ -781,6 +785,7 @@ class RatiosAddFile(View):
                     ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
                     ratios.liabilities_short_therm = liabilities_short_therm
                     ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_trade = liabilities_trade
                     ratios.liabilities_and_equity = liabilities_and_equity
                     ratios.revenue = revenue
                     ratios.profit_operating = profit_operating
@@ -839,6 +844,7 @@ class RatiosAddFile(View):
                     ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
                     ratios.liabilities_short_therm = liabilities_short_therm
                     ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_trade = liabilities_trade
                     ratios.liabilities_and_equity = liabilities_and_equity
                     ratios.revenue = revenue
                     ratios.profit_operating = profit_operating
@@ -879,7 +885,7 @@ class RatiosAddFile(View):
                 else:
                     category = "Medium risk"
 
-                return render(request, 'ratios_view.html', locals())
+                return render(request, 'ratios_detail.html', locals())
 
         return redirect('index')
 
@@ -887,10 +893,10 @@ class RatiosAddFile(View):
 class RatiosDetail(View):
     def get(self, request, ratios_id):
         ratios = get_object_or_404(CompanyRatios, pk=ratios_id)
-        return render(request, 'ratios_view.html', {'results': [ratios]})
+        return render(request, 'ratios_detail.html', {'ratios': [ratios]})
 
 
-class RatiosEdit(LoginRequiredMixin,View):
+class RatiosEdit(LoginRequiredMixin, View):
 
     def get(self, request, ratios_id):
         results = get_object_or_404(CompanyRatios, pk=ratios_id)
@@ -898,7 +904,7 @@ class RatiosEdit(LoginRequiredMixin,View):
         return render(request, 'base_form.html', {'form': form})
 
     def post(self, request, ratios_id):
-        results = get_object_or_404(CompanyRatios, pk=ratios_id)
+        ratios = get_object_or_404(CompanyRatios, pk=ratios_id)
         form = ResultForm(request.POST)
         if form.is_valid():
             ratios, _ = CompanyRatios.objects.update_or_create(pk=ratios_id)
