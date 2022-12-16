@@ -3,7 +3,7 @@
 {% block title %} {% endblock %}
 {% block content %}
 
-    <a href="#">Dodaj badanie</a>
+    <a href="{% url 'index' %}">Add ratios</a>
     <a href="{% url 'company_edit' company.id %}">Edit</a>
     <a href="{% url 'company_delete' company.id %}">Delete</a>
 
@@ -15,7 +15,7 @@
         <ul>
             {% for element in result %}
                 <li>
-                <a href="#">Ocena {{element.id}}</a><br>Date: {{ element.date_added }}
+                <a href="{% url 'ratios_detail' element.id %}">Ocena {{element.id}}</a><br>Date: {{ element.date_added }}
                     <br>Category: {{ element.category.get_rating_name_display }}
                 </li>
             {% endfor %}

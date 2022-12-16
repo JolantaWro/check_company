@@ -4,9 +4,9 @@ from django.db import models
 from django.utils.text import slugify
 
 CATEGORY_CLASS = (
-    (1, "Dobry"),
-    (2, "Umiarkowany"),
-    (3, "Ryzykowny"),
+    (1, "Low risk"),
+    (2, "Medium risk"),
+    (3, "High risk"),
 )
 
 
@@ -64,7 +64,7 @@ class CompanyRatios(models.Model):
     liabilities_long_therm_financial = models.FloatField()
     liabilities_short_therm = models.FloatField()
     liabilities_short_therm_financial = models.FloatField()
-    liabilities_short_therm_trade = models.FloatField()
+    liabilities_trade = models.FloatField()
     liabilities_and_equity = models.FloatField()
     revenue = models.FloatField()
     profit_operating = models.FloatField()

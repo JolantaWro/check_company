@@ -30,7 +30,7 @@ class RatiosAddForm(forms.Form):
     liabilities_long_therm_financial = forms.FloatField()
     liabilities_short_therm = forms.FloatField()
     liabilities_short_therm_financial = forms.FloatField()
-    liabilities_short_therm_trade = forms.FloatField()
+    liabilities_trade = forms.FloatField()
     revenue = forms.FloatField()
     profit_operating = forms.FloatField()
     depreciation = forms.FloatField()
