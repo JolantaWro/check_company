@@ -1,16 +1,16 @@
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .forms import CompanyForm, AddFileForm, LoginForm, AddUserForm, ChangePasswordForm, TradeForm, \
     SearchForm, TaskForm, ResultForm, TaskEditForm, RatiosAddForm
-
 import xml.etree.ElementTree as ET
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from .models import Company, CompanyRatios, Category, Document, Trade, Task
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Permission
 
 
 class LoginUser(View):
@@ -30,7 +30,8 @@ class LoginUser(View):
                 form.add_error(None, 'Incorrect login or password')
         return redirect('accounts')
 
-class LogoutUser(LoginRequiredMixin,View):
+
+class LogoutUser(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         return redirect('index')
@@ -47,15 +48,12 @@ class AddUser(View):
             username = form.cleaned_data.get('login')
             password = form.cleaned_data.get('password')
             password_repeat = form.cleaned_data.get('password_repeat')
-            first_name = form.cleaned_data.get('first_name')
-            last_name = form.cleaned_data.get('last_name')
             mail = form.cleaned_data.get('mail')
             if User.objects.filter(username=username).exists():
                 raise ValidationError('Login already exists')
 
             if password != password_repeat:
                 form.add_error(None, 'Password entered incorrectly')
-
 
             new_user = User.objects.create_user(username=username, password=password, email=mail)
             add_company = Permission.objects.get(codename='add_company')
@@ -68,17 +66,14 @@ class AddUser(View):
             view_category = Permission.objects.get(codename='view_category')
             change_category = Permission.objects.get(codename='change_category')
             delete_category = Permission.objects.get(codename='delete_category')
-
             add_companyratios = Permission.objects.get(codename='add_companyratios')
             view_companyratios = Permission.objects.get(codename='view_companyratios')
             change_companyratios = Permission.objects.get(codename='change_companyratios')
             delete_companyratios = Permission.objects.get(codename='delete_companyratios')
-
             add_trade = Permission.objects.get(codename='add_trade')
             view_trade = Permission.objects.get(codename='view_trade')
             change_trade = Permission.objects.get(codename='change_trade')
             delete_trade = Permission.objects.get(codename='delete_trade')
-
             add_task = Permission.objects.get(codename='add_task')
             view_task = Permission.objects.get(codename='view_task')
             change_task = Permission.objects.get(codename='change_task')
@@ -90,19 +85,17 @@ class AddUser(View):
                                         , delete_companyratios, add_trade, view_trade, change_trade, delete_trade
                                         , add_task, view_task, change_task, delete_task)
 
-
             new_user.save()
             return redirect('accounts')
 
         return redirect('accounts')
 
 
-
-class ChangePasswordView(PermissionRequiredMixin, View):
+class ChangePasswordView(LoginRequiredMixin, View):
 
     def get(self, request, user_id):
         form = ChangePasswordForm()
-        return render(request, 'user_form.html', {'form': form})
+        return render(request, 'base_form.html', {'form': form})
 
     def post(self, request, user_id):
         form = ChangePasswordForm(request.POST)
@@ -118,11 +111,17 @@ class ChangePasswordView(PermissionRequiredMixin, View):
             return redirect('accounts')
         return redirect('accounts')
 
+
 class IndexView(View):
     def get(self, request):
         return render(request, "index.html")
-#
-#
+
+
+class EmptyPage(View):
+    def get(self, request):
+        return HttpResponse(f"<h2>Sorry... Site is under construction </h2>")
+
+
 class MyAccount(View):
     """View for the logged-in user and displays his information"""
 
@@ -159,7 +158,8 @@ class CompanyAdd(LoginRequiredMixin, View):
             trade = form.cleaned_data.get('trade')
 
             trade, _ = Trade.objects.get_or_create(
-                trade_name=trade
+                trade_name=trade,
+                defaults={'slug': trade}
             )
             trade.save()
 
@@ -171,13 +171,6 @@ class CompanyAdd(LoginRequiredMixin, View):
             return redirect('accounts')
         return redirect('accounts')
 
-
-class CompanyView(View):
-    """The ability to view a company from user database"""
-    def get(self, request):
-        company_all = Company.objects.filter(author=request.user)
-
-        return render(request, 'accounts.html', {'company_all': company_all})
 
 class CompanyDetail(LoginRequiredMixin, View):
     """The ability to view a detail company from user database"""
@@ -195,18 +188,19 @@ class CompanyDetail(LoginRequiredMixin, View):
         return render(request, 'company_detail.html', {'company': company, 'result': result, 'task': task})
 
 
-
 class CompanyEdit(LoginRequiredMixin, View):
     """The ability to edit a detail company from user database"""
 
     def get(self, request, company_id):
         company = get_object_or_404(Company, pk=company_id)
-        form = CompanyForm(initial={'company_name': company.company_name, 'number_NIP': company.number_NIP, 'trade': company.trade})
+        form = CompanyForm(initial={'company_name': company.company_name, 'number_NIP': company.number_NIP,
+                                    'trade': company.trade})
         return render(request, 'base_form.html', {'form': form})
 
     def post(self, request, company_id):
         company = get_object_or_404(Company, pk=company_id)
-        form = CompanyForm(request.POST, initial={'company_name': company.company_name, 'number_NIP': company.number_NIP})
+        form = CompanyForm(request.POST, initial={'company_name': company.company_name,
+                                                  'number_NIP': company.number_NIP})
         if form.is_valid():
             trade = form.cleaned_data.get('trade')
 
@@ -225,7 +219,8 @@ class CompanyEdit(LoginRequiredMixin, View):
             return redirect('accounts')
         return redirect('accounts')
 
-class CompanyDelete(LoginRequiredMixin,View):
+
+class CompanyDelete(LoginRequiredMixin, View):
     """The ability to delete a company from user database"""
 
     def get(self, request, company_id):
@@ -260,7 +255,7 @@ class TradeAdd(LoginRequiredMixin, View):
         return redirect('accounts')
 
 
-class TradeSearchCompany(LoginRequiredMixin,View):
+class TradeSearchCompany(LoginRequiredMixin, View):
     """Search company from user database"""
 
     def get(self, request):
@@ -275,7 +270,6 @@ class TradeSearchCompany(LoginRequiredMixin,View):
             return render(request, 'trade_search.html', {'company_all': company_all, 'form': SearchForm()})
 
         return render(request, 'trade_search.html', {'form': form})
-
 
 
 class RatiosAdd(View):
@@ -397,66 +391,7 @@ class RatiosAdd(View):
 
                     return redirect('ratios_detail', ratios_id=ratios.id)
 
-                if capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
-                    category = Category()
-                    category.id = 2
-                    category.rating_name = 2
-                    category.save()
-
-                    ratios = CompanyRatios()
-                    ratios.company = company
-                    ratios.category = category
-                    ratios.year_name = year_result
-                    ratios.assets_fixed = assets_fixed
-                    ratios.assets_current = assets_current
-                    ratios.stock = stock
-                    ratios.receivables_short_term = receivables_short_term
-                    ratios.receivables_trade = receivables_trade
-                    ratios.receivables_tax = receivables_tax
-                    ratios.investments_short_term = investments_short_term
-                    ratios.assets_cash = assets_cash
-                    ratios.assets_total = assets_total
-                    ratios.equity = equity
-                    ratios.capital_share = capital_share
-                    ratios.provision_and_accruals = provision_and_accruals
-                    ratios.liabilities_long_therm = liabilities_long_therm
-                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
-                    ratios.liabilities_short_therm = liabilities_short_therm
-                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
-                    ratios.liabilities_trade = liabilities_trade
-                    ratios.liabilities_and_equity = liabilities_and_equity
-                    ratios.revenue = revenue
-                    ratios.profit_operating = profit_operating
-                    ratios.depreciation = depreciation
-                    ratios.profit_gross = profit_gross
-                    ratios.tax_income = tax_income
-                    ratios.profit_net = profit_net
-                    ratios.capitalization = capitalization
-                    ratios.current_ratio = current_ratio
-                    ratios.debt_ratio = debt_ratio
-                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
-                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
-                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
-                    ratios.profit_operating_margin = profit_operating_margin
-                    ratios.profit_net_margin = profit_net_margin
-                    ratios.debt_financial_net = debt_financial_net
-                    ratios.ebitda = ebitda
-                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
-                    ratios.author = request.user
-                    ratios.save()
-
-                    deadline = datetime.today() + timedelta(days=180)
-
-                    task = Task()
-                    task.author = request.user
-                    task.title = "Add new financial analysis"
-                    task.deadline = deadline
-                    task.company = company
-                    task.save()
-
-                    return redirect('ratios_detail', ratios_id=ratios.id)
-
-                else:
+                if capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300 or debt_to_equity_ratio < 0:
                     category = Category()
                     category.id = 3
                     category.rating_name = 3
@@ -515,10 +450,70 @@ class RatiosAdd(View):
 
                     return redirect('ratios_detail', ratios_id=ratios.id)
 
+                else:
+                    category = Category()
+                    category.id = 2
+                    category.rating_name = 2
+                    category.save()
+
+                    ratios = CompanyRatios()
+                    ratios.company = company
+                    ratios.category = category
+                    ratios.year_name = year_result
+                    ratios.assets_fixed = assets_fixed
+                    ratios.assets_current = assets_current
+                    ratios.stock = stock
+                    ratios.receivables_short_term = receivables_short_term
+                    ratios.receivables_trade = receivables_trade
+                    ratios.receivables_tax = receivables_tax
+                    ratios.investments_short_term = investments_short_term
+                    ratios.assets_cash = assets_cash
+                    ratios.assets_total = assets_total
+                    ratios.equity = equity
+                    ratios.capital_share = capital_share
+                    ratios.provision_and_accruals = provision_and_accruals
+                    ratios.liabilities_long_therm = liabilities_long_therm
+                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
+                    ratios.liabilities_short_therm = liabilities_short_therm
+                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_trade = liabilities_trade
+                    ratios.liabilities_and_equity = liabilities_and_equity
+                    ratios.revenue = revenue
+                    ratios.profit_operating = profit_operating
+                    ratios.depreciation = depreciation
+                    ratios.profit_gross = profit_gross
+                    ratios.tax_income = tax_income
+                    ratios.profit_net = profit_net
+                    ratios.capitalization = capitalization
+                    ratios.current_ratio = current_ratio
+                    ratios.debt_ratio = debt_ratio
+                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
+                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
+                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
+                    ratios.profit_operating_margin = profit_operating_margin
+                    ratios.profit_net_margin = profit_net_margin
+                    ratios.debt_financial_net = debt_financial_net
+                    ratios.ebitda = ebitda
+                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
+                    ratios.author = request.user
+                    ratios.save()
+
+                    deadline = datetime.today() + timedelta(days=180)
+
+                    task = Task()
+                    task.author = request.user
+                    task.title = "Add new financial analysis"
+                    task.deadline = deadline
+                    task.company = company
+                    task.save()
+
+                    return redirect('ratios_detail', ratios_id=ratios.id)
+
             else:
                 if capitalization > 20 and current_ratio > 1 and debt_to_equity_ratio < 300:
                     category = "Low risk"
-                elif capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
+                elif capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300 \
+                        or debt_to_equity_ratio < 0:
                     category = "High risk"
                 else:
                     category = "Medium risk"
@@ -548,7 +543,6 @@ def give_depreciation(root, value_first, value_second):
     return depreciation
 
 
-
 class RatiosAddFile(View):
     """Iterator to analyze the financial result of the company automatically entered data."""
 
@@ -564,7 +558,8 @@ class RatiosAddFile(View):
 
             tree = ET.parse(instance.file_name)
             root = tree.getroot()
-            ET.register_namespace("", "http://www.mf.gov.pl/schematy/SF/DefinicjeTypySprawozdaniaFinansowe/2018/07/09/JednostkaInnaWZlotych")
+            ET.register_namespace(""
+                                  , "http://www.mf.gov.pl/schematy/SF/DefinicjeTypySprawozdaniaFinansowe/2018/07/09/JednostkaInnaWZlotych")
 
             element_year = root.find('.//{*}Naglowek')
             year = element_year.find('.//{*}OkresDo')
@@ -649,9 +644,8 @@ class RatiosAddFile(View):
             liabilities_short_therm_trade_shares = convert_to_float(root, liabilities_short_therm_trade_shares)
             liabilities_short_therm_trade_other = './/{*}Pasywa_B_III_3_D_1'
             liabilities_short_therm_trade_other = convert_to_float(root, liabilities_short_therm_trade_other)
-            liabilities_trade = liabilities_short_therm_trade_related + liabilities_short_therm_trade_shares\
-                                            + liabilities_short_therm_trade_other
-
+            liabilities_trade = liabilities_short_therm_trade_related + liabilities_short_therm_trade_shares \
+                                + liabilities_short_therm_trade_other
             revenue = './/{*}A'
             revenue = convert_to_float(root, revenue)
 
@@ -759,66 +753,7 @@ class RatiosAddFile(View):
 
                     return redirect('ratios_detail', ratios_id=ratios.id)
 
-                if capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
-                    category = Category()
-                    category.id = 2
-                    category.rating_name = 2
-                    category.save()
-
-                    ratios = CompanyRatios()
-                    ratios.company = company
-                    ratios.category = category
-                    ratios.year_name = year_result
-                    ratios.assets_fixed = assets_fixed
-                    ratios.assets_current = assets_current
-                    ratios.stock = stock
-                    ratios.receivables_short_term = receivables_short_term
-                    ratios.receivables_trade = receivables_trade
-                    ratios.receivables_tax = receivables_tax
-                    ratios.investments_short_term = investments_short_term
-                    ratios.assets_cash = assets_cash
-                    ratios.assets_total = assets_total
-                    ratios.equity = equity
-                    ratios.capital_share = capital_share
-                    ratios.provision_and_accruals = provision_and_accruals
-                    ratios.liabilities_long_therm = liabilities_long_therm
-                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
-                    ratios.liabilities_short_therm = liabilities_short_therm
-                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
-                    ratios.liabilities_trade = liabilities_trade
-                    ratios.liabilities_and_equity = liabilities_and_equity
-                    ratios.revenue = revenue
-                    ratios.profit_operating = profit_operating
-                    ratios.depreciation = depreciation
-                    ratios.profit_gross = profit_gross
-                    ratios.tax_income = tax_income
-                    ratios.profit_net = profit_net
-                    ratios.capitalization = capitalization
-                    ratios.current_ratio = current_ratio
-                    ratios.debt_ratio = debt_ratio
-                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
-                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
-                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
-                    ratios.profit_operating_margin = profit_operating_margin
-                    ratios.profit_net_margin = profit_net_margin
-                    ratios.debt_financial_net = debt_financial_net
-                    ratios.ebitda = ebitda
-                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
-                    ratios.author = request.user
-                    ratios.save()
-
-                    deadline = datetime.today() + timedelta(days=180)
-
-                    task = Task()
-                    task.author = request.user
-                    task.title = "Add new financial analysis"
-                    task.deadline = deadline
-                    task.company = company
-                    task.save()
-
-                    return redirect('ratios_detail', ratios_id=ratios.id)
-
-                else:
+                if capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300 or debt_to_equity_ratio < 0:
                     category = Category()
                     category.id = 3
                     category.rating_name = 3
@@ -877,10 +812,70 @@ class RatiosAddFile(View):
 
                     return redirect('ratios_detail', ratios_id=ratios.id)
 
+                else:
+                    category = Category()
+                    category.id = 1
+                    category.rating_name = 1
+                    category.save()
+
+                    ratios = CompanyRatios()
+                    ratios.company = company
+                    ratios.category = category
+                    ratios.year_name = year_result
+                    ratios.assets_fixed = assets_fixed
+                    ratios.assets_current = assets_current
+                    ratios.stock = stock
+                    ratios.receivables_short_term = receivables_short_term
+                    ratios.receivables_trade = receivables_trade
+                    ratios.receivables_tax = receivables_tax
+                    ratios.investments_short_term = investments_short_term
+                    ratios.assets_cash = assets_cash
+                    ratios.assets_total = assets_total
+                    ratios.equity = equity
+                    ratios.capital_share = capital_share
+                    ratios.provision_and_accruals = provision_and_accruals
+                    ratios.liabilities_long_therm = liabilities_long_therm
+                    ratios.liabilities_long_therm_financial = liabilities_long_therm_financial
+                    ratios.liabilities_short_therm = liabilities_short_therm
+                    ratios.liabilities_short_therm_financial = liabilities_short_therm_financial
+                    ratios.liabilities_trade = liabilities_trade
+                    ratios.liabilities_and_equity = liabilities_and_equity
+                    ratios.revenue = revenue
+                    ratios.profit_operating = profit_operating
+                    ratios.depreciation = depreciation
+                    ratios.profit_gross = profit_gross
+                    ratios.tax_income = tax_income
+                    ratios.profit_net = profit_net
+                    ratios.capitalization = capitalization
+                    ratios.current_ratio = current_ratio
+                    ratios.debt_ratio = debt_ratio
+                    ratios.debt_to_equity_ratio = debt_to_equity_ratio
+                    ratios.receivables_turnover_ratio = receivables_turnover_ratio
+                    ratios.liabilities_turnover_ratio = liabilities_turnover_ratio
+                    ratios.profit_operating_margin = profit_operating_margin
+                    ratios.profit_net_margin = profit_net_margin
+                    ratios.debt_financial_net = debt_financial_net
+                    ratios.ebitda = ebitda
+                    ratios.debt_financial_net_to_ebitda = debt_financial_net_to_ebitda
+                    ratios.author = request.user
+                    ratios.save()
+
+                    deadline = datetime.today() + timedelta(days=180)
+
+                    task = Task()
+                    task.author = request.user
+                    task.title = "Add new financial analysis"
+                    task.deadline = deadline
+                    task.company = company
+                    task.save()
+
+                    return redirect('ratios_detail', ratios_id=ratios.id)
+
             else:
                 if capitalization > 20 and current_ratio > 1 and debt_to_equity_ratio < 300:
                     category = "Low risk"
-                elif capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300:
+                elif capitalization < 20 and current_ratio < 1 and debt_to_equity_ratio > 300 \
+                        or debt_to_equity_ratio < 0:
                     category = "High risk"
                 else:
                     category = "Medium risk"
@@ -891,20 +886,23 @@ class RatiosAddFile(View):
 
 
 class RatiosDetail(View):
+    """The ability to view a detail ratios """
     def get(self, request, ratios_id):
         ratios = get_object_or_404(CompanyRatios, pk=ratios_id)
         return render(request, 'ratios_detail.html', {'ratios': [ratios]})
 
 
 class RatiosEdit(LoginRequiredMixin, View):
+    """The ability to edit a ratios and save in user database"""
 
     def get(self, request, ratios_id):
         results = get_object_or_404(CompanyRatios, pk=ratios_id)
-        form = ResultForm(initial={'liabilities_long_therm_financial': results.liabilities_long_therm_financial, 'liabilities_short_therm_financial': results.liabilities_short_therm_financial})
+        form = ResultForm(initial={'liabilities_long_therm_financial': results.liabilities_long_therm_financial
+            ,'liabilities_short_therm_financial': results.liabilities_short_therm_financial})
         return render(request, 'base_form.html', {'form': form})
 
     def post(self, request, ratios_id):
-        ratios = get_object_or_404(CompanyRatios, pk=ratios_id)
+        # ratios = get_object_or_404(CompanyRatios, pk=ratios_id)
         form = ResultForm(request.POST)
         if form.is_valid():
             ratios, _ = CompanyRatios.objects.update_or_create(pk=ratios_id)
@@ -915,7 +913,9 @@ class RatiosEdit(LoginRequiredMixin, View):
             return redirect('ratios_detail', ratios_id=ratios.id)
         return redirect('accounts')
 
+
 class RatiosDelete(LoginRequiredMixin, View):
+    """The ability to delete a ratios user database"""
 
     def get(self, request, ratios_id):
         results = get_object_or_404(CompanyRatios, pk=ratios_id)
@@ -927,8 +927,8 @@ class RatiosDelete(LoginRequiredMixin, View):
         return redirect('accounts')
 
 
-
 class TaskAdd(LoginRequiredMixin, View):
+
   def get(self, request):
       form = TaskForm()
       return render(request, 'base_form.html', {'form': form})
@@ -950,11 +950,6 @@ class TaskAdd(LoginRequiredMixin, View):
           return redirect('accounts')
       return redirect('accounts')
 
-class TaskDetail(LoginRequiredMixin, View):
-  def get(self, request):
-      task_all = Task.objects.filter(author=request.user)
-
-      return render(request, 'accounts.html', {'task_all': task_all})
 
 class TaskEdit(LoginRequiredMixin, View):
 
@@ -964,10 +959,10 @@ class TaskEdit(LoginRequiredMixin, View):
       return render(request, 'base_form.html', {'form': form})
 
   def post(self, request, task_id):
-      task= get_object_or_404(Task, pk=task_id)
-      form = TaskEditForm(request.POST, initial={'title': task.title, 'deadline': task.deadline, 'description': task.description})
+      task = get_object_or_404(Task, pk=task_id)
+      form = TaskEditForm(request.POST, initial={'title': task.title, 'deadline': task.deadline,
+                                                 'description': task.description})
       if form.is_valid():
-
           task, _ = Task.objects.update_or_create(pk=task_id)
           task.title = form.cleaned_data.get('title')
           task.deadline = form.cleaned_data.get('deadline')
@@ -978,20 +973,21 @@ class TaskEdit(LoginRequiredMixin, View):
 
       return redirect('accounts')
 
+
 class TaskDelete(LoginRequiredMixin, View):
 
   def get(self, request, task_id):
       task = get_object_or_404(Task, pk=task_id)
-      return render(request, 'delete_form.html', {'form': task })
+      return render(request, 'delete_form.html', {'form': task})
 
   def post(self, request, task_id):
       task = get_object_or_404(Task, pk=task_id)
       task.delete()
       return redirect('accounts')
 
+
 class TaskDetail(LoginRequiredMixin, View):
     def get(self, request, task_id):
         task = get_object_or_404(Task, pk=task_id)
 
         return render(request, 'task_detail.html', {'task': task})
-

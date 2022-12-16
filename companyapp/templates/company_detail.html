@@ -4,8 +4,10 @@
 {% block content %}
 
     <a href="{% url 'index' %}">Add ratios</a>
-    <a href="{% url 'company_edit' company.id %}">Edit</a>
-    <a href="{% url 'company_delete' company.id %}">Delete</a>
+    <a href="{% url 'company_edit' company.id %}">Edit Company</a>
+    <a href="{% url 'company_delete' company.id %}">Delete Company</a>
+    <a href="{% url 'task_add' %}">Add Task</a>
+    <br><br><br>
 
     <h3>Company: {{ company }}</h3>
     <h3>NIP: {{ company.number_NIP }} </h3>
@@ -22,9 +24,9 @@
         </ul>
       <br><br>
     <h3>Task: </h3>
+    <br>
     {% if message %}
         <h5>{{ message }}</h5>
-      <a href="{% url 'task_add' %}">New Task</a>
     {% else %}
     <ul>
         {% for element in task %}

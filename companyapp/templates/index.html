@@ -1,18 +1,17 @@
-{% load static %}
 <!doctype html>
+{% load static %}
 <html lang="en">
 <head>
    <meta charset="UTF-8">
    <title>Check company</title>
-<!--    <link rel="stylesheet" href="">-->
    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
    <nav>
        <ul>
-           <li><a href="#">About us</a> </li>
-           <li><a href="#">Contact</a> </li>
-           <li><a href="#">Information </a> </li>
+           <li><a href="{% url 'page_empty' %}">About us</a> </li>
+           <li><a href="{% url 'page_empty' %}">Contact</a> </li>
+           <li><a href="{% url 'page_empty' %}">Information </a> </li>
            <li><a href="{% url 'accounts' %}">My account</a> </li>
        </ul>
    </nav>
@@ -22,20 +21,10 @@
    <section>
        <article>
            <div class="kolumna">
-               <h2>Witaj na stronie analizy wskaźników finansowych </h2>
-               <p>Analiza finansowa firmy jest częścią analizy ekonomicznej, zapewnia ona wiele cennych informacji
-                   w zakresie danego przedsiębiorstwa. Stanowi obserwację poszczególnych obszarów finansów,
-                   oraz wyciągnięcie wniosków na temat aktualnej kondycji firmy. <a href="#">View more...</a><br><br>
-                   Nasza strona umożliwia przeprowadzenie badania w oparciu o dane finansowe wprowadzone ręcznie,
-                   bądź za pomocą pliku w formacie xml.
-                   Zachęcamy również do skorzystania z pełnego dostępu do aplikacji przy pomocy logowania.
-                   Aplikacja daje możliwość gromadzenia wykonanych raportów finansowych, pełnej ewidencji
-                   przeprowadzonych transakcji gospodarczych oraz wiele narzędzi wspomagających codzienna prace.
-               </p>
-                <h1><a href="{% url 'ratios_add' %}">Manual analysis</a></h1>
-
-                <h1><a href="{% url 'file_add' %}">File analysis</a></h1>
-               </div>
+               <h2>Welcome to the financial metrics analysis page</h2><br><br>
+               <h1><a href="{% url 'ratios_add' %}">Manual analysis</a></h1>
+               <h1><a href="{% url 'file_add' %}">File analysis</a></h1><br><br><br><br>
+           </div>
        </article>
    </section>
 </body>

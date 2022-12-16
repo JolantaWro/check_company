@@ -4,9 +4,11 @@
 {% block content %}
    <a href="{% url 'task_edit' task.id %}">Edit</a>
    <a href="{% url 'task_delete' task.id %}">Delete</a>
-   <h2>Title: {{ task.title }}</h2>
-   <h3>Company: {{ task.company.company_name }}</h3>
-   <h3>Date: {{ task.deadline }} </h3>
-   <h3>Description: <br>{{ task.description }} </h3>
+   <br><br>
+   <h4>Title: {{ task.title }}</h4>
+   <h4>Company: {{ task.company.company_name }}</h4>
+   <h4>Date: {{ task.deadline }} </h4>
+   <h4>Description: </h4>
+   <h4>{{ task.description }} </h4>
 
 {% endblock %}

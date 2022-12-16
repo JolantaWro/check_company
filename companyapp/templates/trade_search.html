@@ -2,14 +2,14 @@
 {% load crispy_forms_tags %}
 {% block title %} {% endblock %}
 {% block content %}
-
+<br>
 <form action="" method="post">
    {% csrf_token %}
    {{ form }}<br/>
    <input type="submit" value="Search"/>
 </form>
 <br><br>
-Resolution<br/>
+<h4>Resolution</h4><br/>
 {% if company_all|length == 0 %}
    <h3>No resolution</h3>
 {% else %}

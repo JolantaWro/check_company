@@ -3,19 +3,23 @@
 {% block content %}
 
 {% if request.user.is_authenticated %}
-
-    <p>Witaj, {{ request.user }} </p><br>
+    <div class="menu">
         <a href="{% url 'user_logout' %}">Logout</a>
+        <a href="{% url 'user_change_pass' request.user.id %}">Change Password</a>
         <a href="{% url 'company_add' %}">New Contractors</a>
-        <a href="{% url 'index' %}">Dodaj badanie</a>
+        <a href="{% url 'index' %}">Add Ratios</a>
         <a href="{% url 'task_add' %}">New Task</a>
         <a href="{% url 'trade_search' %}">Search Contractors</a>
+        <br><br>
+    </div>
+        <h4>Welcome, {{ request.user }} </h4><br>
+    <br>
 
   {% if company_all|length == 0 %}
       <h2>No contractors</h2>
 
   {% else %}
-      Contractors {{ amount_of_company }}<br>
+      <h4>Contractors {{ amount_of_company }}</h4><br>
       <ul>
           {% for company in company_all %}
           <li>
@@ -26,10 +30,11 @@
           {% endfor %}
       </ul>
   {% endif %}
+    <br><br><br>
     {% if task_all|length == 0 %}
        <h3>No tasks</h3>
     {% else %}
-      <ul>Tasks:<br><br>
+      <ul><h4>Tasks: </h4><br>
           {% for task in task_all %}
           <li>
               <a href="{% url 'task_detail' task.id %}"> {{task.title}} Company:  {{ task.company }}</a><br>Date: {{ task.deadline }}
@@ -43,11 +48,11 @@
 
 
 {% else %}
-  <h3>{{ message }}</h3><br><br>
-  <p>If you have an account:</p>
+  <h2>{{ message }}</h2><br><br>
+  <h3>If you have an account:</h3>
   <p><a href="{% url 'user_login' %}">Login</a></p>
   <br>
-  <p>If no:</p>
+  <h3>If no:</h3>
   <p><a href="{% url 'user_add' %}">Register</a></p>
 {% endif %}
 
